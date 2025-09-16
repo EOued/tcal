@@ -39,6 +39,9 @@ int main(void)
   int week_index               = 0;
   int month_index              = 0;
   RENDER(r);
+  int to_render      = 0;
+  unsigned int x_lim = COLS;
+  unsigned int y_lim = LINES;
   while (1)
   {
     refresh();
@@ -47,16 +50,20 @@ int main(void)
     {
     case 'q': endwin(); goto leave;
     case 'j':
-      if (y < LINES - 1) y++;
+      if (y < (int)y_lim) y++;
+      to_render = 1;
       break;
     case 'k':
       if (y > 0) y--;
+      to_render = 1;
       break;
     case 'l':
-      if (x < COLS - 1) x++;
+      if (x < (int)x_lim) x++;
+      to_render = 1;
       break;
     case 'h':
       if (x > 0) x--;
+      to_render = 1;
       break;
     case 'v':
       renderableRemove(r, view_uuid);
@@ -66,12 +73,19 @@ int main(void)
                                 view_index == 2
                                     ? &month_index
                                     : (view_index == 1 ? &week_index : NULL));
+      if (view_index == 2)
+      {
+        x_lim = 4;
+        y_lim = 4;
+      }
+      to_render = 1;
       break;
     case '?':
       if (opened_popup) renderableRemove(r, box_uuid);
       else
         box_uuid = renderableAdd(r, _help_box, NULL);
       opened_popup = 1 - opened_popup;
+      to_render    = 1;
       break;
     }
     if (view_index == 2)
@@ -79,7 +93,11 @@ int main(void)
       month_index = x + y * 5;
       updateArgument(r, view_uuid, &month_index);
     }
-    RENDER(r);
+    if (to_render)
+    {
+      RENDER(r);
+      to_render = 0;
+    }
   }
 leave:
   freeRenderable(r);

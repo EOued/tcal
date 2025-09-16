@@ -34,7 +34,7 @@
 
 #define RENDER(renderable)                                                     \
   do {                                                                         \
-    clear();                                                                   \
+    erase();                                                                   \
     render(renderable);                                                        \
     refresh();                                                                 \
   } while (0)
