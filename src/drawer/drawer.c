@@ -14,6 +14,13 @@ void _help_box(void* _)
   draw_box(COLS / 3, LINES / 3, 2 * COLS / 3, 2 * LINES / 3, text, HELP_LENGTH);
 }
 
+void day_grid(void* _)
+{
+  (void)_;
+  mvprintw(0, COLS / 2, "Day %d", 0);
+  draw_box(0, 1, COLS - 1, LINES - 1, NULL, 0);
+}
+
 void week_grid(void* _)
 {
   (void)_;

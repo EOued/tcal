@@ -1,6 +1,7 @@
 #ifndef DRAWER_H
 #define DRAWER_H
 
+void day_grid(void* _);
 void week_grid(void* _);
 void month_grid(void* _);
 void _help_box(void*);

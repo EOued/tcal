@@ -33,7 +33,7 @@ int main(void)
   int box_uuid     = -1;
   int* box_args    = calloc(4, sizeof(int));
   renderableAdd(r, quit_text, NULL);
-  void (*view_array[2])(void*) = {week_grid, month_grid};
+  void (*view_array[3])(void*) = {day_grid, week_grid, month_grid};
   unsigned int view_index      = 0;
   int view_uuid                = renderableAdd(r, view_array[view_index], NULL);
   RENDER(r);
@@ -58,8 +58,9 @@ int main(void)
       break;
     case 'v':
       renderableRemove(r, view_uuid);
-      view_index = 1 - view_index;
-      view_uuid  = renderableAdd(r, view_array[view_index], NULL);
+      view_index += 1;
+      view_index %= 3;
+      view_uuid = renderableAdd(r, view_array[view_index], NULL);
       break;
     case '?':
       if (opened_popup) renderableRemove(r, box_uuid);
