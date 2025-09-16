@@ -59,4 +59,9 @@
   var = 1;                                                                     \
   break;
 
+#define UPDATE_VIEW(view_index, renderable, view_uuid)                         \
+  do {                                                                         \
+    renderableRemove(renderable, view_uuid);                                   \
+    view_uuid = renderableAdd(r, view_array[view_index], NULL);                \
+  } while (0)
 #endif

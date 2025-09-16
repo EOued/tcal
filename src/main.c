@@ -62,18 +62,15 @@ int main(void)
       if (view_index == 2 && month_index > 0) month_index--;
       RENDER_BREAK(to_render);
     case 'v':
-      renderableRemove(r, view_uuid);
       view_index += 1;
       view_index %= 3;
-      view_uuid = renderableAdd(r, view_array[view_index], NULL);
+      UPDATE_VIEW(view_index, r, view_uuid);
       if (view_index == 1) updateArgument(r, view_uuid, &week_index);
       if (view_index == 2) updateArgument(r, view_uuid, &month_index);
       RENDER_BREAK(to_render);
     case ' ':
-
-      renderableRemove(r, view_uuid);
       view_index = 0;
-      view_uuid  = renderableAdd(r, view_array[view_index], NULL);
+      UPDATE_VIEW(view_index, r, view_uuid);
       RENDER_BREAK(to_render);
     case '?':
       if (opened_popup) renderableRemove(r, box_uuid);
