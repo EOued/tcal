@@ -68,7 +68,12 @@ int main(void)
       view_uuid = renderableAdd(r, view_array[view_index], NULL);
       if (view_index == 1) updateArgument(r, view_uuid, &week_index);
       if (view_index == 2) updateArgument(r, view_uuid, &month_index);
+      RENDER_BREAK(to_render);
+    case ' ':
 
+      renderableRemove(r, view_uuid);
+      view_index = 0;
+      view_uuid  = renderableAdd(r, view_array[view_index], NULL);
       RENDER_BREAK(to_render);
     case '?':
       if (opened_popup) renderableRemove(r, box_uuid);
