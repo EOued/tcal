@@ -26,8 +26,6 @@ int main(void)
   noecho();
   curs_set(0);
   start_color();
-  int x            = 0;
-  int y            = 0;
   int opened_popup = 0;
   renderable* r    = initRenderable();
   int box_uuid     = -1;
@@ -39,9 +37,7 @@ int main(void)
   int week_index               = 0;
   int month_index              = 0;
   RENDER(r);
-  int to_render      = 0;
-  unsigned int x_lim = COLS;
-  unsigned int y_lim = LINES;
+  int to_render = 0;
   while (1)
   {
     refresh();
@@ -50,49 +46,41 @@ int main(void)
     {
     case 'q': endwin(); goto leave;
     case 'j':
-      if (y < (int)y_lim) y++;
-      to_render = 1;
-      break;
+      if (view_index == 1 && week_index < 4) week_index++;
+      if (view_index == 2 && month_index < 19) month_index += 5;
+      RENDER_BREAK(to_render);
     case 'k':
-      if (y > 0) y--;
-      to_render = 1;
-      break;
+      if (view_index == 1 && week_index > 0) week_index--;
+      if (view_index == 2 && month_index > 0) month_index -= 5;
+      RENDER_BREAK(to_render);
     case 'l':
-      if (x < (int)x_lim) x++;
-      to_render = 1;
-      break;
+      if (view_index == 1 && week_index < 4) week_index++;
+      if (view_index == 2 && month_index < 24) month_index++;
+      RENDER_BREAK(to_render);
     case 'h':
-      if (x > 0) x--;
-      to_render = 1;
-      break;
+      if (view_index == 1 && week_index > 0) week_index--;
+      if (view_index == 2 && month_index > 0) month_index--;
+      RENDER_BREAK(to_render);
     case 'v':
       renderableRemove(r, view_uuid);
       view_index += 1;
       view_index %= 3;
-      view_uuid = renderableAdd(r, view_array[view_index],
-                                view_index == 2
-                                    ? &month_index
-                                    : (view_index == 1 ? &week_index : NULL));
-      if (view_index == 2)
-      {
-        x_lim = 4;
-        y_lim = 4;
-      }
-      to_render = 1;
-      break;
+      view_uuid = renderableAdd(r, view_array[view_index], NULL);
+      if (view_index == 1) updateArgument(r, view_uuid, &week_index);
+      if (view_index == 2) updateArgument(r, view_uuid, &month_index);
+
+      RENDER_BREAK(to_render);
     case '?':
       if (opened_popup) renderableRemove(r, box_uuid);
       else
         box_uuid = renderableAdd(r, _help_box, NULL);
       opened_popup = 1 - opened_popup;
-      to_render    = 1;
-      break;
+
+      RENDER_BREAK(to_render);
     }
-    if (view_index == 2)
-    {
-      month_index = x + y * 5;
-      updateArgument(r, view_uuid, &month_index);
-    }
+    if (view_index == 2) updateArgument(r, view_uuid, &month_index);
+    if (view_index == 1) updateArgument(r, view_uuid, &week_index);
+
     if (to_render)
     {
       RENDER(r);

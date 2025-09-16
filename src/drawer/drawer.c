@@ -21,9 +21,9 @@ void day_grid(void* _)
   draw_box(0, 1, COLS - 1, LINES - 1, NULL, 0);
 }
 
-void week_grid(void* _)
+void week_grid(void* varg)
 {
-  (void)_;
+  int* ptrindex = (int*)varg;
   mvprintw(0, COLS / 2 - 7, "Week number %d", 0);
   // Each day
   double step  = COLS / 5;
@@ -32,9 +32,12 @@ void week_grid(void* _)
   {
     double start = k * step;
     double end   = (k + 1) * step - 1;
+    init_pair(1, COLOR_RED, COLOR_BLACK);
+    if (k == *ptrindex) attron(COLOR_PAIR(1));
     draw_box(start, 2, end, LINES - 3, NULL, 0);
-    mvprintw(3, (COLS / 10) + start - strlen(day[k]) / 2, "%s", day[k]);
     HLINE_BOXSPLIT(start, end, 4);
+    attroff(COLOR_PAIR(1));
+    mvprintw(3, (COLS / 10) + start - strlen(day[k]) / 2, "%s", day[k]);
   }
 }
 

@@ -54,4 +54,9 @@
   ((x) == 0                                                                    \
        ? 1                                                                     \
        : ((x) < 0 ? (int)floor(log10(-(x))) + 1 : (int)floor(log10(x)) + 1))
+
+#define RENDER_BREAK(var)                                                      \
+  var = 1;                                                                     \
+  break;
+
 #endif
