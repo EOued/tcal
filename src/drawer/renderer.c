@@ -24,6 +24,13 @@ renderable* initRenderable(void)
   return r;
 }
 
+void updateArgument(renderable* renderable, unsigned int UUID, void* newarg)
+{
+  if (!renderable || !renderable->args) return;
+  renderable->args[UUID] = newarg;
+  return;
+}
+
 void emptyElementsAddIndex(renderable* renderable, unsigned int index)
 {
   if (!renderable || !renderable->_emptyelements_indexes) return;

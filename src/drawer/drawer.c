@@ -38,9 +38,9 @@ void week_grid(void* _)
   }
 }
 
-void month_grid(void* _)
+void month_grid(void* varg)
 {
-  (void)_;
+  int* ptrindex = (int*)varg;
   mvprintw(0, COLS / 2 - 7, "Month %d", 0);
   double vstep = COLS / 5;
   double hstep = (LINES - 2) / 5;
@@ -53,12 +53,16 @@ void month_grid(void* _)
     {
       double start2 = 1 + k2 * hstep;
       double end2   = 1 + (k2 + 1) * hstep - 1;
+
+      init_pair(1, COLOR_RED, COLOR_BLACK);
+      if (k2 * 5 + k == *ptrindex) attron(COLOR_PAIR(1));
       draw_box(start1, start2, end1, end2, NULL, 0);
+      HLINE_BOXSPLIT(start1, end1, start2 + 2);
+      attroff(COLOR_PAIR(1));
       mvprintw(start2 + 1,
                (COLS / 10) + start1 -
                    (strlen(day[k]) + 2 + ndgit(k + k2 * 5)) / 2,
                "%s, %d", day[k], k2 * 5 + k);
-      HLINE_BOXSPLIT(start1, end1, start2 + 2);
     }
   }
 }

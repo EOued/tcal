@@ -36,6 +36,8 @@ int main(void)
   void (*view_array[3])(void*) = {day_grid, week_grid, month_grid};
   unsigned int view_index      = 0;
   int view_uuid                = renderableAdd(r, view_array[view_index], NULL);
+  int week_index               = 0;
+  int month_index              = 0;
   RENDER(r);
   while (1)
   {
@@ -60,7 +62,10 @@ int main(void)
       renderableRemove(r, view_uuid);
       view_index += 1;
       view_index %= 3;
-      view_uuid = renderableAdd(r, view_array[view_index], NULL);
+      view_uuid = renderableAdd(r, view_array[view_index],
+                                view_index == 2
+                                    ? &month_index
+                                    : (view_index == 1 ? &week_index : NULL));
       break;
     case '?':
       if (opened_popup) renderableRemove(r, box_uuid);
@@ -69,8 +74,12 @@ int main(void)
       opened_popup = 1 - opened_popup;
       break;
     }
+    if (view_index == 2)
+    {
+      month_index = x + y * 5;
+      updateArgument(r, view_uuid, &month_index);
+    }
     RENDER(r);
-    move(y, x);
   }
 leave:
   freeRenderable(r);

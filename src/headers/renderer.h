@@ -20,7 +20,7 @@ typedef struct
 void render(renderable* renderable);
 // Init renderable
 renderable* initRenderable(void);
-
+void updateArgument(renderable* renderable, unsigned int UUID, void* newarg);
 void freeRenderable(renderable* renderable);
 // Add a renderable function to the renderable, return an UUID for said function
 // in the renderable
