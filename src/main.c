@@ -55,7 +55,15 @@ int main(void)
     int ch = getch();
     switch (ch)
     {
-    case 'q': endwin(); goto leave;
+    case 'q':
+      if (opened_help)
+      {
+        renderableRemove(r, box_uuid);
+        opened_help = 0;
+        RENDER_BREAK(to_render);
+      }
+      endwin();
+      goto leave;
     case 'j':
       if (view_index == 1 && week_index < 4) week_index++;
       if (view_index == 2 && month_args[0] < 19) month_args[0] += 5;
