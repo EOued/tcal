@@ -49,7 +49,8 @@ void month_grid(void* varg)
       double end2   = 1 + (k2 + 1) * hstep - 1;
 
       init_pair(1, COLOR_RED, COLOR_BLACK);
-      init_pair(2, COLOR_BLUE, COLOR_BLACK);
+      init_color(COLOR_WHITE + 1, 500, 500, 500);
+      init_pair(2, COLOR_WHITE + 1, COLOR_BLACK);
       if (k2 * 5 + k == *ptrindex) attron(COLOR_PAIR(1));
       draw_box(start1, start2, end1, end2);
       HLINE_BOXSPLIT(start1, end1, start2 + 2);
