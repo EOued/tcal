@@ -1,4 +1,5 @@
 #include "drawer.h"
+#include "functions.h"
 #include "macro.h"
 #include "renderer.h"
 #include <ncurses.h>
@@ -7,6 +8,23 @@
 #include <time.h>
 #include <wchar.h>
 
+static inline int do_skip_day(int day, MONTH m, int year)
+{
+  return week_day(day, m, year) > fri;
+}
+
+static inline int do_skip_week(int week_number, MONTH m, int year)
+{
+  int is_a_day_in_good_month = 0;
+  int* md;
+  for (int i = mon; i < sat; i++)
+  {
+    md = month_day(week_number, i, m, year);
+    is_a_day_in_good_month |= (int)m == md[1];
+    free(md);
+  }
+  return !is_a_day_in_good_month;
+}
 void quit_text(void* _)
 {
   (void)_;
@@ -124,11 +142,16 @@ int main(void)
         week_args[1] = (week_args[1] + 1) % 5;
         if (!week_args[1]) week_args[2] = (week_args[2] + 1) % 12;
         if (!week_args[2]) week_args[3]++;
+        while (do_skip_week(week_args[1], week_args[2], week_args[3]))
+        {
+          week_args[1] = (week_args[1] + 1) % 5;
+          if (!week_args[1]) week_args[2] = (week_args[2] + 1) % 12;
+          if (!week_args[2]) week_args[3]++;
+        }
         RENDER_BREAK(to_render);
       }
       if (view_index == 0)
       {
-
         int is_leap =
             (fmod(day_args[2], 4) == 0) &&
             (fmod(day_args[2], 100) != 0 || fmod(day_args[2], 400) == 0);
@@ -140,6 +163,16 @@ int main(void)
           day_args[1] = (day_args[1] + 1) % 12;
           if (!day_args[1]) day_args[2]++;
         }
+        while (do_skip_day(day_args[0], day_args[1], day_args[2]))
+        {
+          if (++day_args[0] >= total_month_days[day_args[1]])
+          {
+            day_args[0] = 0;
+            day_args[1] = (day_args[1] + 1) % 12;
+            if (!day_args[1]) day_args[2]++;
+          }
+        }
+
         RENDER_BREAK(to_render);
       }
       break;
@@ -172,11 +205,23 @@ int main(void)
           week_args[2] = 0;
           week_args[1] = 0;
         }
+        while (do_skip_week(week_args[1], week_args[2], week_args[3]))
+        {
+          week_args[1] = (week_args[1] - 1 + 5) % 5;
+          if (week_args[1] == 4) week_args[2] = (week_args[2] - 1 + 12) % 12;
+          if (week_args[2] == 1) week_args[3]--;
+          if (week_args[3] < 1900)
+          {
+            week_args[3] = 1900;
+            week_args[2] = 0;
+            week_args[1] = 0;
+          }
+        }
+
         RENDER_BREAK(to_render);
       }
       if (view_index == 0)
       {
-
         if (--day_args[0] < 0)
         {
           day_args[1] = (day_args[1] - 1 + 12) % 12;
@@ -194,6 +239,27 @@ int main(void)
             day_args[0] = 0;
           }
         }
+        while (do_skip_day(day_args[0], day_args[1], day_args[2]))
+        {
+          if (--day_args[0] < 0)
+          {
+            day_args[1] = (day_args[1] - 1 + 12) % 12;
+            if (day_args[1] == 1) day_args[2]--;
+            int is_leap =
+                (fmod(day_args[2], 4) == 0) &&
+                (fmod(day_args[2], 100) != 0 || fmod(day_args[2], 400) == 0);
+            int total_month_days[12] = {31, 28 + is_leap, 31, 30, 31, 30,
+                                        31, 31,           30, 31, 30, 31};
+            day_args[0]              = total_month_days[day_args[1]];
+            if (day_args[2] < 1900)
+            {
+              day_args[2] = 1900;
+              day_args[1] = 0;
+              day_args[0] = 0;
+            }
+          }
+        }
+
         RENDER_BREAK(to_render);
       }
 
