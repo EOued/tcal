@@ -4,33 +4,15 @@
 #include <ncurses.h>
 #include <string.h>
 
-#define HELP_LENGTH 21
+#define HELP_LENGTH 5
 
 void _help_box(void* varg)
 {
   int* ptrpages            = (int*)varg;
   char** text              = calloc(HELP_LENGTH, sizeof(char*));
   char* _text[HELP_LENGTH] = {
-      "?: Show help menu.",
-      "v: Change view.",
-      "v: Change view.",
-      "v: Change view.",
-      "v: Change view.",
-      "v: Change view.",
-      "v: Change view.",
-      "v: Change view.",
-      "v: Change view.",
-      "v: Change view.",
-      "v: Change view.",
-      "v: Change view.",
-      "v: Change view.",
-      "v: Change view.",
-      "v: Change view.",
-      "v: Change view.",
-      "v: Change view.",
-      "v: Change view.",
-      "v: Change view.",
-      "v: Change view.",
+      "?: Show help menu.", "v: Change view.", "n: Next page.",
+      "p: Previous page.",
       "space: When this key is pressed, switch to day view of selected day."};
   uint len;
   for (uint i = 0; i < HELP_LENGTH; i++)
