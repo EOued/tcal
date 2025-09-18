@@ -3,6 +3,7 @@ CFILES = \
 	drawer/views.c\
 	drawer/pages.c\
 	drawer/drawer.c\
+	functions/functions.c\
 	main.c\
 
 SRCDIR = src
@@ -10,7 +11,7 @@ SOURCES = $(foreach file, $(CFILES), $(SRCDIR)/$(file))
 OBJDIR = build/obj
 INCLUDE = -I$(SRCDIR)/headers
 OFILES = $(CFILES:.c=.o)
-SUBDIRS = drawer
+SUBDIRS = drawer functions
 TARGETS = $(foreach file, $(OFILES), $(OBJDIR)/$(file))
 EXECDIR = build/target
 EXECNAME = tcal

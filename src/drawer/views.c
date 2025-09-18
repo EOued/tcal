@@ -1,4 +1,5 @@
 #include "drawer.h"
+#include "functions.h"
 #include "macro.h"
 #include <ncurses.h>
 #include <string.h>
@@ -37,6 +38,7 @@ void month_grid(void* varg)
   double vstep = COLS / 5;
   double hstep = (LINES - 2) / 5;
   char* day[5] = {" Monday", " Tuesday", " Wednesday", " Thursday", " Friday"};
+  int* dm;
   for (int k = 0; k < 5; k++)
   {
     double start1 = k * vstep;
@@ -47,14 +49,21 @@ void month_grid(void* varg)
       double end2   = 1 + (k2 + 1) * hstep - 1;
 
       init_pair(1, COLOR_RED, COLOR_BLACK);
+      init_pair(2, COLOR_BLUE, COLOR_BLACK);
       if (k2 * 5 + k == *ptrindex) attron(COLOR_PAIR(1));
       draw_box(start1, start2, end1, end2);
       HLINE_BOXSPLIT(start1, end1, start2 + 2);
       attroff(COLOR_PAIR(1));
+
+      dm = month_day(k2, (DAY)k, apr, 2025);
+      if (dm[1] != apr) attron(COLOR_PAIR(2));
+
       mvprintw(start2 + 1,
                (COLS / 10) + start1 -
                    (strlen(day[k]) + 2 + ndgit(k + k2 * 5)) / 2,
-               "%s, %d", day[k], k2 * 5 + k);
+               "%s, %d", day[k], dm[0]);
+      attroff(COLOR_PAIR(2));
+      free(dm);
     }
   }
 }
