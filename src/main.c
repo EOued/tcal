@@ -113,6 +113,13 @@ int main(void)
         if (!month_args[1]) month_args[2]++;
         RENDER_BREAK(to_render);
       }
+      if (view_index == 1)
+      {
+        week_args[1] = (week_args[1] + 1) % 5;
+        if (!week_args[1]) week_args[2] = (week_args[2] + 1) % 12;
+        if (!week_args[2]) week_args[3]++;
+        RENDER_BREAK(to_render);
+      }
       break;
     case 'p':
       if (opened_help && help_page > 0)
@@ -129,6 +136,19 @@ int main(void)
         {
           month_args[2] = 1900;
           month_args[1] = 0;
+        }
+        RENDER_BREAK(to_render);
+      }
+      if (view_index == 1)
+      {
+        week_args[1] = (week_args[1] - 1 + 5) % 5;
+        if (week_args[1] == 4) week_args[2] = (week_args[2] - 1 + 12) % 12;
+        if (week_args[2] == 1) week_args[3]--;
+        if (week_args[3] < 1900)
+        {
+          week_args[3] = 1900;
+          week_args[2] = 0;
+          week_args[1] = 0;
         }
         RENDER_BREAK(to_render);
       }
