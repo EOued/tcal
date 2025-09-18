@@ -52,7 +52,7 @@ int main(void)
       RENDER_BREAK(to_render);
     case 'k':
       if (view_index == 1 && week_index > 0) week_index--;
-      if (view_index == 2 && month_index > 0) month_index -= 5;
+      if (view_index == 2 && month_index > 4) month_index -= 5;
       RENDER_BREAK(to_render);
     case 'l':
       if (view_index == 1 && week_index < 4) week_index++;
