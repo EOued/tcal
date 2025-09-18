@@ -37,14 +37,23 @@ int main(void)
   void (*view_array[3])(void*) = {day_grid, week_grid, month_grid};
   unsigned int view_index      = 0;
   int view_uuid                = renderableAdd(r, view_array[view_index], NULL);
-  int week_index               = 0;
+  int* week_args;
   int* month_args;
+  MEMCHK((week_args = calloc(4, sizeof(int))));
   MEMCHK((month_args = calloc(3, sizeof(int))));
   // Get current month and year
   time_t t          = time(NULL);
   struct tm* tminfo = localtime(&t);
   month_args[1]     = tminfo->tm_mon;
   month_args[2]     = tminfo->tm_year + 1900;
+
+  struct tm first_day = *tminfo;
+  first_day.tm_mday   = 1;
+  mktime(&first_day);
+
+  week_args[1] = (tminfo->tm_mday + first_day.tm_wday - 1) / 7;
+  week_args[2] = tminfo->tm_mon;
+  week_args[3] = tminfo->tm_year + 1900;
 
   RENDER(r);
   int to_render          = 0;
@@ -65,26 +74,26 @@ int main(void)
       endwin();
       goto leave;
     case 'j':
-      if (view_index == 1 && week_index < 4) week_index++;
+      if (view_index == 1 && week_args[0] < 4) week_args[0]++;
       if (view_index == 2 && month_args[0] < 19) month_args[0] += 5;
       RENDER_BREAK(to_render);
     case 'k':
-      if (view_index == 1 && week_index > 0) week_index--;
+      if (view_index == 1 && week_args[0] > 0) week_args[0]--;
       if (view_index == 2 && month_args[0] > 4) month_args[0] -= 5;
       RENDER_BREAK(to_render);
     case 'l':
-      if (view_index == 1 && week_index < 4) week_index++;
+      if (view_index == 1 && week_args[0] < 4) week_args[0]++;
       if (view_index == 2 && month_args[0] < 24) month_args[0]++;
       RENDER_BREAK(to_render);
     case 'h':
-      if (view_index == 1 && week_index > 0) week_index--;
+      if (view_index == 1 && week_args[0] > 0) week_args[0]--;
       if (view_index == 2 && month_args[0] > 0) month_args[0]--;
       RENDER_BREAK(to_render);
     case 'v':
       view_index += 1;
       view_index %= 3;
       UPDATE_VIEW(view_index, r, view_uuid);
-      if (view_index == 1) updateArgument(r, view_uuid, &week_index);
+      if (view_index == 1) updateArgument(r, view_uuid, week_args);
       if (view_index == 2) updateArgument(r, view_uuid, month_args);
       RENDER_BREAK(to_render);
     case ' ':
@@ -134,7 +143,7 @@ int main(void)
       RENDER_BREAK(to_render);
     }
     if (view_index == 2) updateArgument(r, view_uuid, month_args);
-    if (view_index == 1) updateArgument(r, view_uuid, &week_index);
+    if (view_index == 1) updateArgument(r, view_uuid, week_args);
 
     if (to_render)
     {
@@ -145,6 +154,7 @@ int main(void)
 leave:
   freeRenderable(r);
   free(box_args);
+  free(week_args);
   free(month_args);
   return EXIT_SUCCESS;
 }

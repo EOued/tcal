@@ -13,21 +13,32 @@ void day_grid(void* _)
 
 void week_grid(void* varg)
 {
-  int* ptrindex = (int*)varg;
-  mvprintw(0, COLS / 2 - 7, "Week number %d", 0);
+  int* args = (int*)varg;
+  int index = args[0];
+  int week  = args[1];
+  int month = args[2];
+  int year  = args[3];
+  mvprintw(0, COLS / 2 - 7, "Week number %d", week + 1);
   // Each day
   double step  = COLS / 5;
   char* day[5] = {" Monday", " Tuesday", " Wednesday", " Thursday", " Friday"};
+  char* month_display[12] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                             "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+  int* dm;
   for (int k = 0; k < 5; k++)
   {
     double start = k * step;
     double end   = (k + 1) * step - 1;
     init_pair(1, COLOR_RED, COLOR_BLACK);
-    if (k == *ptrindex) attron(COLOR_PAIR(1));
+    if (k == index) attron(COLOR_PAIR(1));
     draw_box(start, 2, end, LINES - 3);
     HLINE_BOXSPLIT(start, end, 4);
     attroff(COLOR_PAIR(1));
-    mvprintw(3, (COLS / 10) + start - strlen(day[k]) / 2, "%s", day[k]);
+
+    dm = month_day(week, (DAY)k, month, year);
+    mvprintw(3, (COLS / 10) + start - strlen(day[k]) / 2, "%s, %s %d",
+             month_display[dm[1]], day[k], dm[0]);
+    free(dm);
   }
 }
 
