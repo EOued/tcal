@@ -8,7 +8,7 @@ void day_grid(void* _)
 {
   (void)_;
   mvprintw(0, COLS / 2, "Day %d", 0);
-  draw_box(0, 1, COLS - 1, LINES - 1);
+  draw_box(0, 1, COLS - 1, LINES - 2);
 }
 
 void week_grid(void* varg)
