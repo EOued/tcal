@@ -6,9 +6,9 @@
 
 #define HELP_LENGTH 21
 
-void _help_box(void* _)
+void _help_box(void* varg)
 {
-  (void)_;
+  int* ptrpages            = (int*)varg;
   char** text              = calloc(HELP_LENGTH, sizeof(char*));
   char* _text[HELP_LENGTH] = {
       "?: Show help menu.",
@@ -39,8 +39,11 @@ void _help_box(void* _)
     text[i] = calloc(len + 1, sizeof(char));
     strncpy(text[i], _text[i], len);
   }
-  draw_page(COLS / 3, LINES / 3, 2 * COLS / 3, 2 * LINES / 3, "HELP MENU", text,
-            HELP_LENGTH, 1);
+  int page = draw_page(COLS / 3, LINES / 3, 2 * COLS / 3, 2 * LINES / 3,
+                       "HELP MENU", text, HELP_LENGTH, *ptrpages);
+  // Displayed page is not entered argument: most likely an overflow, we set
+  // back the page to the latest (provided by draw_page)
+  if (page != -1 && page != *ptrpages) *ptrpages = page;
   for (uint i = 0; i < HELP_LENGTH; i++) free(text[i]);
   free(text);
 }

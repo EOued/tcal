@@ -26,10 +26,10 @@ int main(void)
   noecho();
   curs_set(0);
   start_color();
-  int opened_popup = 0;
-  renderable* r    = initRenderable();
-  int box_uuid     = -1;
-  int* box_args    = calloc(4, sizeof(int));
+  int opened_help = 0;
+  renderable* r   = initRenderable();
+  int box_uuid    = -1;
+  int* box_args   = calloc(4, sizeof(int));
   renderableAdd(r, quit_text, NULL);
   void (*view_array[3])(void*) = {day_grid, week_grid, month_grid};
   unsigned int view_index      = 0;
@@ -37,7 +37,8 @@ int main(void)
   int week_index               = 0;
   int month_index              = 0;
   RENDER(r);
-  int to_render = 0;
+  int to_render          = 0;
+  unsigned int help_page = 0;
   while (1)
   {
     refresh();
@@ -72,12 +73,29 @@ int main(void)
       view_index = 0;
       UPDATE_VIEW(view_index, r, view_uuid);
       RENDER_BREAK(to_render);
+    case 'n':
+      if (opened_help)
+      {
+        help_page++;
+        updateArgument(r, box_uuid, &help_page);
+        RENDER_BREAK(to_render);
+      }
+      break;
+    case 'p':
+      if (opened_help && help_page > 0)
+      {
+        help_page--;
+        updateArgument(r, box_uuid, &help_page);
+        RENDER_BREAK(to_render);
+      }
+      break;
     case KEY_RESIZE: RENDER_BREAK(to_render);
     case '?':
-      if (opened_popup) renderableRemove(r, box_uuid);
+      help_page = 0;
+      if (opened_help) renderableRemove(r, box_uuid);
       else
-        box_uuid = renderableAdd(r, _help_box, NULL);
-      opened_popup = 1 - opened_popup;
+        box_uuid = renderableAdd(r, _help_box, &help_page);
+      opened_help = 1 - opened_help;
       RENDER_BREAK(to_render);
     }
     if (view_index == 2) updateArgument(r, view_uuid, &month_index);
