@@ -36,9 +36,10 @@ int main(void)
   renderableAdd(r, quit_text, NULL);
   void (*view_array[3])(void*) = {day_grid, week_grid, month_grid};
   unsigned int view_index      = 0;
-  int view_uuid                = renderableAdd(r, view_array[view_index], NULL);
+  int* day_args;
   int* week_args;
   int* month_args;
+  MEMCHK((day_args = calloc(3, sizeof(int))));
   MEMCHK((week_args = calloc(4, sizeof(int))));
   MEMCHK((month_args = calloc(3, sizeof(int))));
   // Get current month and year
@@ -55,6 +56,11 @@ int main(void)
   week_args[2] = tminfo->tm_mon;
   week_args[3] = tminfo->tm_year + 1900;
 
+  day_args[0] = tminfo->tm_mday;
+  day_args[1] = tminfo->tm_mon;
+  day_args[2] = tminfo->tm_year + 1900;
+
+  int view_uuid = renderableAdd(r, view_array[view_index], day_args);
   RENDER(r);
   int to_render          = 0;
   unsigned int help_page = 0;
@@ -120,6 +126,22 @@ int main(void)
         if (!week_args[2]) week_args[3]++;
         RENDER_BREAK(to_render);
       }
+      if (view_index == 0)
+      {
+
+        int is_leap =
+            (fmod(day_args[2], 4) == 0) &&
+            (fmod(day_args[2], 100) != 0 || fmod(day_args[2], 400) == 0);
+        int total_month_days[12] = {31, 28 + is_leap, 31, 30, 31, 30,
+                                    31, 31,           30, 31, 30, 31};
+        if (++day_args[0] >= total_month_days[day_args[1]])
+        {
+          day_args[0] = 0;
+          day_args[1] = (day_args[1] + 1) % 12;
+          if (!day_args[1]) day_args[2]++;
+        }
+        RENDER_BREAK(to_render);
+      }
       break;
     case 'p':
       if (opened_help && help_page > 0)
@@ -152,6 +174,29 @@ int main(void)
         }
         RENDER_BREAK(to_render);
       }
+      if (view_index == 0)
+      {
+
+        if (--day_args[0] < 0)
+        {
+          day_args[1] = (day_args[1] - 1 + 12) % 12;
+          if (day_args[1] == 1) day_args[2]--;
+          int is_leap =
+              (fmod(day_args[2], 4) == 0) &&
+              (fmod(day_args[2], 100) != 0 || fmod(day_args[2], 400) == 0);
+          int total_month_days[12] = {31, 28 + is_leap, 31, 30, 31, 30,
+                                      31, 31,           30, 31, 30, 31};
+          day_args[0]              = total_month_days[day_args[1]];
+          if (day_args[2] < 1900)
+          {
+            day_args[2] = 1900;
+            day_args[1] = 0;
+            day_args[0] = 0;
+          }
+        }
+        RENDER_BREAK(to_render);
+      }
+
       break;
     case KEY_RESIZE: RENDER_BREAK(to_render);
     case '?':
@@ -164,6 +209,7 @@ int main(void)
     }
     if (view_index == 2) updateArgument(r, view_uuid, month_args);
     if (view_index == 1) updateArgument(r, view_uuid, week_args);
+    if (view_index == 0) updateArgument(r, view_uuid, day_args);
 
     if (to_render)
     {
@@ -174,6 +220,7 @@ int main(void)
 leave:
   freeRenderable(r);
   free(box_args);
+  free(day_args);
   free(week_args);
   free(month_args);
   return EXIT_SUCCESS;

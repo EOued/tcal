@@ -34,5 +34,5 @@ enum _day
 };
 
 int* month_day(int month_week_number, DAY _week_day, MONTH m, float year);
-
+DAY week_day(float month_day, MONTH month, float year);
 #endif

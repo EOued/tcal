@@ -4,10 +4,19 @@
 #include <ncurses.h>
 #include <string.h>
 
-void day_grid(void* _)
+void day_grid(void* varg)
 {
-  (void)_;
-  mvprintw(0, COLS / 2, "Day %d", 0);
+  int* args               = (int*)varg;
+  int day                 = args[0];
+  int month               = args[1];
+  int year                = args[2];
+  char* tday[7]           = {" Monday", " Tuesday",  " Wednesday", " Thursday",
+                             " Friday", " Saturday", " Sunday"};
+  char* month_display[12] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                             "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+  DAY _week_day           = week_day(day, (MONTH)month, year);
+  mvprintw(0, COLS / 2, "%s, %d %s %d", tday[_week_day], day,
+           month_display[month], year);
   draw_box(0, 1, COLS - 1, LINES - 2);
 }
 
