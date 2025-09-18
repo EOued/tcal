@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define ERR(msg)                                                               \
+#define ERRMSG(msg)                                                            \
   do {                                                                         \
     fprintf(stderr, #msg);                                                     \
     exit(1);                                                                   \
@@ -13,12 +13,12 @@
 
 #define ERRCHK(op)                                                             \
   do {                                                                         \
-    if ((op) == -1) ERR(op);                                                   \
+    if ((op) == -1) ERRMSG(op);                                                \
   } while (0)
 
 #define MEMCHK(op)                                                             \
   do {                                                                         \
-    if ((op) == NULL) ERR(op);                                                 \
+    if ((op) == NULL) ERRMSG(op);                                              \
   } while (0)
 
 #define REALLOC(size, capacity, size_t, ptr)                                   \

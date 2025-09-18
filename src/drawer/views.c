@@ -33,8 +33,14 @@ void week_grid(void* varg)
 
 void month_grid(void* varg)
 {
-  int* ptrindex = (int*)varg;
-  mvprintw(0, COLS / 2 - 7, "Month %d", 0);
+  int* args               = (int*)varg;
+  int index               = args[0];
+  int month               = args[1];
+  int year                = args[2];
+  char* month_display[12] = {"January",   "February", "March",    "April",
+                             "May",       "June",     "July",     "August",
+                             "September", "October",  "November", "December"};
+  mvprintw(0, COLS / 2 - 7, "%s, %d", month_display[month], year);
   double vstep = COLS / 5;
   double hstep = (LINES - 2) / 5;
   char* day[5] = {" Monday", " Tuesday", " Wednesday", " Thursday", " Friday"};
@@ -51,13 +57,13 @@ void month_grid(void* varg)
       init_pair(1, COLOR_RED, COLOR_BLACK);
       init_color(COLOR_WHITE + 1, 500, 500, 500);
       init_pair(2, COLOR_WHITE + 1, COLOR_BLACK);
-      if (k2 * 5 + k == *ptrindex) attron(COLOR_PAIR(1));
+      if (k2 * 5 + k == index) attron(COLOR_PAIR(1));
       draw_box(start1, start2, end1, end2);
       HLINE_BOXSPLIT(start1, end1, start2 + 2);
       attroff(COLOR_PAIR(1));
 
-      dm = month_day(k2, (DAY)k, apr, 2025);
-      if (dm[1] != apr) attron(COLOR_PAIR(2));
+      dm = month_day(k2, (DAY)k, (MONTH)month, year);
+      if (dm[1] != month) attron(COLOR_PAIR(2));
 
       mvprintw(start2 + 1,
                (COLS / 10) + start1 -
