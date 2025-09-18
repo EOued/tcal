@@ -10,10 +10,10 @@ void _help_box(void* varg)
 {
   int* ptrpages            = (int*)varg;
   char** text              = calloc(HELP_LENGTH, sizeof(char*));
-  char* _text[HELP_LENGTH] = {
-      "?: Show help menu.", "v: Change view.", "n: Next page.",
-      "p: Previous page.",
-      "space: When this key is pressed, switch to day view of selected day."};
+  char* _text[HELP_LENGTH] = {"?: Show help menu.", "v: Change view.",
+                              "n: Next page/day/week/month.",
+                              "p: Previous page/day/week/month.",
+                              "space: Switch to day view of selected day."};
   uint len;
   for (uint i = 0; i < HELP_LENGTH; i++)
   {

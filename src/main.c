@@ -11,7 +11,7 @@ void quit_text(void* _)
 {
   (void)_;
   move(LINES - 1, 0);
-  addstr("Press q to exit, h for help...");
+  addstr("Press q to exit, ? for help...");
   move(0, 0);
 }
 
@@ -108,6 +108,11 @@ int main(void)
       {
         month_args[1] = (month_args[1] - 1 + 12) % 12;
         if (month_args[1] == 11) month_args[2]--;
+        if (month_args[2] < 1900)
+        {
+          month_args[2] = 1900;
+          month_args[1] = 0;
+        }
         RENDER_BREAK(to_render);
       }
       break;
