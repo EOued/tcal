@@ -72,12 +72,12 @@ int main(void)
       view_index = 0;
       UPDATE_VIEW(view_index, r, view_uuid);
       RENDER_BREAK(to_render);
+    case KEY_RESIZE: RENDER_BREAK(to_render);
     case '?':
       if (opened_popup) renderableRemove(r, box_uuid);
       else
         box_uuid = renderableAdd(r, _help_box, NULL);
       opened_popup = 1 - opened_popup;
-
       RENDER_BREAK(to_render);
     }
     if (view_index == 2) updateArgument(r, view_uuid, &month_index);

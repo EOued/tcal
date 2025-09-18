@@ -64,4 +64,6 @@
     renderableRemove(renderable, view_uuid);                                   \
     view_uuid = renderableAdd(r, view_array[view_index], NULL);                \
   } while (0)
+
+#define uint unsigned int
 #endif

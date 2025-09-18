@@ -1,6 +1,8 @@
 CFILES = \
-	drawer/drawer.c\
 	drawer/renderer.c\
+	drawer/views.c\
+	drawer/pages.c\
+	drawer/drawer.c\
 	main.c\
 
 SRCDIR = src
