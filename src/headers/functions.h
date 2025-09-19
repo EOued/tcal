@@ -34,7 +34,7 @@ enum _day
   sun
 };
 
-int* month_day(int month_week_number, DAY _week_day, MONTH m, float year);
+int* month_day(int month_week_number, DAY _week_day, MONTH m, int year);
 DAY week_day(float month_day, MONTH month, float year);
 int month_total_day(MONTH m, int year);
 

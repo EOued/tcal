@@ -139,17 +139,16 @@ int main(void)
       }
       if (view_index == 1)
       {
-        CASC_WEEK_INCR(week_args[1], week_args[2], week_args[3]);
-        while (do_skip_week(week_args[1], week_args[2], week_args[3]))
+        do {
           CASC_WEEK_INCR(week_args[1], week_args[2], week_args[3]);
+        } while (do_skip_week(week_args[1], week_args[2], week_args[3]));
         RENDER_BREAK(to_render);
       }
       if (view_index == 0)
       {
-        CASC_DAY_INCR(day_args[0], day_args[1], day_args[2]);
-        while (do_skip_day(day_args[0], day_args[1], day_args[2]))
+        do {
           CASC_DAY_INCR(day_args[0], day_args[1], day_args[2]);
-
+        } while (do_skip_day(day_args[0], day_args[1], day_args[2]));
         RENDER_BREAK(to_render);
       }
       break;
@@ -168,25 +167,19 @@ int main(void)
       }
       if (view_index == 1)
       {
-        CASC_WEEK_DECR(week_args[1], week_args[2], week_args[3]);
-        WDMONTH_LIMIT(week_args[1], week_args[2], week_args[3])
-        while (do_skip_week(week_args[1], week_args[2], week_args[3]))
-        {
+        do {
           CASC_WEEK_DECR(week_args[1], week_args[2], week_args[3]);
           WDMONTH_LIMIT(week_args[1], week_args[2], week_args[3])
-        }
+        } while (do_skip_week(week_args[1], week_args[2], week_args[3]));
 
         RENDER_BREAK(to_render);
       }
       if (view_index == 0)
       {
-        CASC_DAY_DECR(day_args[0], day_args[1], day_args[2]);
-        WDMONTH_LIMIT(day_args[0], day_args[1], day_args[2])
-        while (do_skip_day(day_args[0], day_args[1], day_args[2]))
-        {
+        do {
           CASC_DAY_DECR(day_args[0], day_args[1], day_args[2]);
           WDMONTH_LIMIT(day_args[0], day_args[1], day_args[2])
-        }
+        } while (do_skip_day(day_args[0], day_args[1], day_args[2]));
 
         RENDER_BREAK(to_render);
       }

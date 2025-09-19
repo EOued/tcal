@@ -129,16 +129,16 @@
 
 #define CASC_DAY_INCR(day, month, year)                                        \
   do {                                                                         \
-    if (++day >= TOTAL_MONTH_DAY(month, year))                                 \
+    if (++day > TOTAL_MONTH_DAY(month, year))                                 \
     {                                                                          \
-      day = 0;                                                                 \
+      day = 1;                                                                 \
       CASC_MONTH_INCR(month, year);                                            \
     }                                                                          \
   } while (0);
 
 #define CASC_DAY_DECR(day, month, year)                                        \
   do {                                                                         \
-    if (--day < 0)                                                             \
+    if (--day < 1)                                                             \
     {                                                                          \
       CASC_MONTH_DECR(month, year);                                            \
       day = TOTAL_MONTH_DAY(month, year);                                      \

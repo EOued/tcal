@@ -25,7 +25,6 @@ int month_total_day(MONTH m, int year)
   return days[m];
 }
 
-
 DAY week_day(float month_day, MONTH month, float year)
 {
   float adjusted_month = 1 + month;
@@ -37,27 +36,23 @@ DAY week_day(float month_day, MONTH month, float year)
   return fmod(h + 5, 7);
 }
 
-int* month_day(int month_week_number, DAY _week_day, MONTH m, float year)
+int* month_day(int month_week_number, DAY _week_day, MONTH m, int year)
 {
   int* res;
   MEMCHK((res = calloc(2, sizeof(int))));
   DAY month_first_day = week_day(1.0f, m, year);
-  int is_leap =
-      (fmod(year, 4) == 0) && (fmod(year, 100) != 0 || fmod(year, 400) == 0);
-  int total_month_days[12] = {31, 28 + is_leap, 31, 30, 31, 30,
-                              31, 31,           30, 31, 30, 31};
-  int day                  = 0;
+  uint day             = 0;
   if (month_week_number == 0 && _week_day < month_first_day)
   {
-    day =
-        total_month_days[(m - 1 + 12) % 12] - (month_first_day - _week_day - 1);
+    day = TOTAL_MONTH_DAY((m - 1 + 12) % 12, year) -
+          (month_first_day - _week_day - 1);
     m--;
   }
   else
     day = 7 * month_week_number + (int)_week_day - month_first_day + 1;
-  if (month_week_number != 0 && day > total_month_days[m])
+  if (month_week_number != 0 && day > TOTAL_MONTH_DAY(m, year))
   {
-    day -= total_month_days[m];
+    day -= TOTAL_MONTH_DAY(m, year);
     m++;
   }
   res[0] = day;
