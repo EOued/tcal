@@ -8,6 +8,8 @@
 #include <time.h>
 #include <wchar.h>
 
+// 293 lines
+
 static inline int do_skip_day(int day, MONTH m, int year)
 {
   return week_day(day, m, year) > fri;
@@ -49,39 +51,38 @@ int main(void)
   int opened_help = 0;
   renderable* r   = initRenderable();
   int box_uuid    = -1;
-  int* box_args;
-  MEMCHK((box_args = malloc(4 * sizeof(int))));
   renderableAdd(r, quit_text, NULL);
   void (*view_array[3])(void*) = {day_grid, week_grid, month_grid};
-  unsigned int view_index      = 0;
-  int* day_args;
-  int* week_args;
-  int* month_args;
-  MEMCHK((day_args = calloc(3, sizeof(int))));
-  MEMCHK((week_args = calloc(4, sizeof(int))));
-  MEMCHK((month_args = calloc(3, sizeof(int))));
+  uint view_index              = 0;
+
+  MEMCREATE(int*, box_args, malloc(4 * sizeof(int)));
+  MEMCREATE(int*, day_args, calloc(3, sizeof(int)));
+  MEMCREATE(int*, week_args, calloc(4, sizeof(int)));
+  MEMCREATE(int*, month_args, calloc(3, sizeof(int)));
+
   // Get current month and year
   time_t t          = time(NULL);
   struct tm* tminfo = localtime(&t);
-  month_args[1]     = tminfo->tm_mon;
-  month_args[2]     = tminfo->tm_year + 1900;
 
   struct tm first_day = *tminfo;
   first_day.tm_mday   = 1;
   mktime(&first_day);
 
-  week_args[1] = (tminfo->tm_mday + first_day.tm_wday - 1) / 7;
-  week_args[2] = tminfo->tm_mon;
-  week_args[3] = tminfo->tm_year + 1900;
+  _MONTH(tminfo, month_args[1]);
+  _YEAR(tminfo, month_args[2]);
 
-  day_args[0] = tminfo->tm_mday;
-  day_args[1] = tminfo->tm_mon;
-  day_args[2] = tminfo->tm_year + 1900;
+  _WEEK(tminfo, first_day, week_args[1]);
+  _MONTH(tminfo, week_args[2]);
+  _YEAR(tminfo, week_args[3]);
+
+  _DAY(tminfo, day_args[0]);
+  _MONTH(tminfo, day_args[1]);
+  _YEAR(tminfo, day_args[2]);
 
   int view_uuid = renderableAdd(r, view_array[view_index], day_args);
   RENDER(r);
-  int to_render          = 0;
-  unsigned int help_page = 0;
+  int to_render  = 0;
+  uint help_page = 0;
   while (1)
   {
     refresh();
@@ -133,21 +134,14 @@ int main(void)
       }
       if (view_index == 2)
       {
-        month_args[1] = (month_args[1] + 1) % 12;
-        if (!month_args[1]) month_args[2]++;
+        CASC_MONTH_INCR(month_args[1], month_args[2]);
         RENDER_BREAK(to_render);
       }
       if (view_index == 1)
       {
-        week_args[1] = (week_args[1] + 1) % 5;
-        if (!week_args[1]) week_args[2] = (week_args[2] + 1) % 12;
-        if (!week_args[2]) week_args[3]++;
+        CASC_WEEK_INCR(week_args[1], week_args[2], week_args[3]);
         while (do_skip_week(week_args[1], week_args[2], week_args[3]))
-        {
-          week_args[1] = (week_args[1] + 1) % 5;
-          if (!week_args[1]) week_args[2] = (week_args[2] + 1) % 12;
-          if (!week_args[2]) week_args[3]++;
-        }
+          CASC_WEEK_INCR(week_args[1], week_args[2], week_args[3]);
         RENDER_BREAK(to_render);
       }
       if (view_index == 0)
