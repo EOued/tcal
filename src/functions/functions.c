@@ -17,6 +17,15 @@ int gregorian_zeller(int q, int m, int K, int J)
   return (q + op1 + K + op2 + op3 - 2 * J) % 7;
 }
 
+int month_total_day(MONTH m, int year)
+{
+  if (m > 11) return -1;
+  int days[12] = {31, 28 + IS_LEAP(year), 31, 30, 31, 30, 31, 31, 30, 31, 30,
+                  31};
+  return days[m];
+}
+
+
 DAY week_day(float month_day, MONTH month, float year)
 {
   float adjusted_month = 1 + month;

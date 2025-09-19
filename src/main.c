@@ -146,26 +146,9 @@ int main(void)
       }
       if (view_index == 0)
       {
-        int is_leap =
-            (fmod(day_args[2], 4) == 0) &&
-            (fmod(day_args[2], 100) != 0 || fmod(day_args[2], 400) == 0);
-        int total_month_days[12] = {31, 28 + is_leap, 31, 30, 31, 30,
-                                    31, 31,           30, 31, 30, 31};
-        if (++day_args[0] >= total_month_days[day_args[1]])
-        {
-          day_args[0] = 0;
-          day_args[1] = (day_args[1] + 1) % 12;
-          if (!day_args[1]) day_args[2]++;
-        }
+        CASC_DAY_INCR(day_args[0], day_args[1], day_args[2]);
         while (do_skip_day(day_args[0], day_args[1], day_args[2]))
-        {
-          if (++day_args[0] >= total_month_days[day_args[1]])
-          {
-            day_args[0] = 0;
-            day_args[1] = (day_args[1] + 1) % 12;
-            if (!day_args[1]) day_args[2]++;
-          }
-        }
+          CASC_DAY_INCR(day_args[0], day_args[1], day_args[2]);
 
         RENDER_BREAK(to_render);
       }
@@ -179,79 +162,30 @@ int main(void)
       }
       if (view_index == 2)
       {
-        month_args[1] = (month_args[1] - 1 + 12) % 12;
-        if (month_args[1] == 11) month_args[2]--;
-        if (month_args[2] < 1900)
-        {
-          month_args[2] = 1900;
-          month_args[1] = 0;
-        }
+        CASC_MONTH_DECR(month_args[1], month_args[2]);
+        MONTH_LIMIT(month_args[1], month_args[2]);
         RENDER_BREAK(to_render);
       }
       if (view_index == 1)
       {
-        week_args[1] = (week_args[1] - 1 + 5) % 5;
-        if (week_args[1] == 4) week_args[2] = (week_args[2] - 1 + 12) % 12;
-        if (week_args[2] == 1) week_args[3]--;
-        if (week_args[3] < 1900)
-        {
-          week_args[3] = 1900;
-          week_args[2] = 0;
-          week_args[1] = 0;
-        }
+        CASC_WEEK_DECR(week_args[1], week_args[2], week_args[3]);
+        WDMONTH_LIMIT(week_args[1], week_args[2], week_args[3])
         while (do_skip_week(week_args[1], week_args[2], week_args[3]))
         {
-          week_args[1] = (week_args[1] - 1 + 5) % 5;
-          if (week_args[1] == 4) week_args[2] = (week_args[2] - 1 + 12) % 12;
-          if (week_args[2] == 1) week_args[3]--;
-          if (week_args[3] < 1900)
-          {
-            week_args[3] = 1900;
-            week_args[2] = 0;
-            week_args[1] = 0;
-          }
+          CASC_WEEK_DECR(week_args[1], week_args[2], week_args[3]);
+          WDMONTH_LIMIT(week_args[1], week_args[2], week_args[3])
         }
 
         RENDER_BREAK(to_render);
       }
       if (view_index == 0)
       {
-        if (--day_args[0] < 0)
-        {
-          day_args[1] = (day_args[1] - 1 + 12) % 12;
-          if (day_args[1] == 1) day_args[2]--;
-          int is_leap =
-              (fmod(day_args[2], 4) == 0) &&
-              (fmod(day_args[2], 100) != 0 || fmod(day_args[2], 400) == 0);
-          int total_month_days[12] = {31, 28 + is_leap, 31, 30, 31, 30,
-                                      31, 31,           30, 31, 30, 31};
-          day_args[0]              = total_month_days[day_args[1]];
-          if (day_args[2] < 1900)
-          {
-            day_args[2] = 1900;
-            day_args[1] = 0;
-            day_args[0] = 0;
-          }
-        }
+        CASC_DAY_DECR(day_args[0], day_args[1], day_args[2]);
+        WDMONTH_LIMIT(day_args[0], day_args[1], day_args[2])
         while (do_skip_day(day_args[0], day_args[1], day_args[2]))
         {
-          if (--day_args[0] < 0)
-          {
-            day_args[1] = (day_args[1] - 1 + 12) % 12;
-            if (day_args[1] == 1) day_args[2]--;
-            int is_leap =
-                (fmod(day_args[2], 4) == 0) &&
-                (fmod(day_args[2], 100) != 0 || fmod(day_args[2], 400) == 0);
-            int total_month_days[12] = {31, 28 + is_leap, 31, 30, 31, 30,
-                                        31, 31,           30, 31, 30, 31};
-            day_args[0]              = total_month_days[day_args[1]];
-            if (day_args[2] < 1900)
-            {
-              day_args[2] = 1900;
-              day_args[1] = 0;
-              day_args[0] = 0;
-            }
-          }
+          CASC_DAY_DECR(day_args[0], day_args[1], day_args[2]);
+          WDMONTH_LIMIT(day_args[0], day_args[1], day_args[2])
         }
 
         RENDER_BREAK(to_render);
