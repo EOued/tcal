@@ -64,10 +64,10 @@
   var = 1;                                                                     \
   break;
 
-#define UPDATE_VIEW(view_index, renderable, view_uuid)                         \
+#define UPDATE_VIEW(renderable, view_uuid, view_func, view_args)               \
   do {                                                                         \
     renderableRemove(renderable, view_uuid);                                   \
-    view_uuid = renderableAdd(r, view_array[view_index], NULL);                \
+    view_uuid = renderableAdd(renderable, view_func, view_args);               \
   } while (0)
 
 #define _DAY(tminfo, day) day = tminfo->tm_mday
@@ -129,7 +129,7 @@
 
 #define CASC_DAY_INCR(day, month, year)                                        \
   do {                                                                         \
-    if (++day > TOTAL_MONTH_DAY(month, year))                                 \
+    if (++day > TOTAL_MONTH_DAY(month, year))                                  \
     {                                                                          \
       day = 1;                                                                 \
       CASC_MONTH_INCR(month, year);                                            \

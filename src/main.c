@@ -11,23 +11,6 @@
 
 // 293 lines
 
-/* static inline int do_skip_day(int day, MONTH m, int year) */
-/* { */
-/*   return week_day(day, m, year) > fri; */
-/* } */
-
-/* static inline int do_skip_week(int week_number, MONTH m, int year) */
-/* { */
-/*   int is_a_day_in_good_month = 0; */
-/*   int* md; */
-/*   for (int i = mon; i < sat; i++) */
-/*   { */
-/*     md = month_day(week_number, i, m, year); */
-/*     is_a_day_in_good_month |= (int)m == md[1]; */
-/*     free(md); */
-/*   } */
-/*   return !is_a_day_in_good_month; */
-/* } */
 void quit_text(void* _)
 {
   (void)_;
@@ -42,17 +25,14 @@ int main(void)
   noecho();
   curs_set(0);
   start_color();
-  // int opened_help = 0;
   renderable* r = initRenderable();
   int box_uuid  = -1;
   renderableAdd(r, quit_text, NULL);
-  /* void (*view_array[3])(void*) = {day_grid, week_grid, month_grid}; */
-  /* uint view_index              = 0; */
 
   MEMCREATE(int*, box_args, malloc(4 * sizeof(int)));
-  MEMCREATE(int*, day_args, calloc(3, sizeof(int)));
-  MEMCREATE(int*, week_args, calloc(4, sizeof(int)));
-  MEMCREATE(int*, month_args, calloc(3, sizeof(int)));
+  MEMCREATE(int*, day_arg, calloc(3, sizeof(int)));
+  MEMCREATE(int*, week_arg, calloc(4, sizeof(int)));
+  MEMCREATE(int*, month_arg, calloc(3, sizeof(int)));
 
   // Get current month and year
   time_t t          = time(NULL);
@@ -62,42 +42,85 @@ int main(void)
   first_day.tm_mday   = 1;
   mktime(&first_day);
 
-  _MONTH(tminfo, month_args[1]);
-  _YEAR(tminfo, month_args[2]);
+  _MONTH(tminfo, month_arg[1]);
+  _YEAR(tminfo, month_arg[2]);
 
-  _WEEK(tminfo, first_day, week_args[1]);
-  _MONTH(tminfo, week_args[2]);
-  _YEAR(tminfo, week_args[3]);
+  _WEEK(tminfo, first_day, week_arg[1]);
+  _MONTH(tminfo, week_arg[2]);
+  _YEAR(tminfo, week_arg[3]);
 
-  _DAY(tminfo, day_args[0]);
-  _MONTH(tminfo, day_args[1]);
-  _YEAR(tminfo, day_args[2]);
+  _DAY(tminfo, day_arg[0]);
+  _MONTH(tminfo, day_arg[1]);
+  _YEAR(tminfo, day_arg[2]);
+
+  int view_uuid = renderableAdd(r, day_grid, day_arg);
 
   uint help_page = 0;
 
   views* v            = viewsInit();
   enum views view     = day;
   enum views old_view = none;
-  // Day view
-  createView(v, day);
-  // Help view
-  createView(v, help);
+  for (enum views _v = help; _v <= month; _v++) createView(v, _v);
 
-  MEMCREATE(help_arg*, helpActionArgs, calloc(1, sizeof(help_arg)));
-  helpActionArgs->view      = &view;
-  helpActionArgs->old_view  = &old_view;
-  helpActionArgs->r         = r;
-  helpActionArgs->uuid      = &box_uuid;
-  helpActionArgs->args      = &help_page;
-  helpActionArgs->_help_box = _help_box;
+  MEMCREATE(HELP_ARG*, helpActionArg, calloc(1, sizeof(HELP_ARG)));
+  helpActionArg->view      = &view;
+  helpActionArg->old_view  = &old_view;
+  helpActionArg->r         = r;
+  helpActionArg->uuid      = &box_uuid;
+  helpActionArg->args      = &help_page;
+  helpActionArg->_help_box = _help_box;
 
-  viewsAddAction(v, day, '?', helpViewOpen, &helpActionArgs);
-  viewsAddAction(v, day, 'q', quit, NULL);
+  MEMCREATE(DAY_ARG*, dayActionArg, calloc(1, sizeof(DAY_ARG)));
+  dayActionArg->view     = &view;
+  dayActionArg->old_view = &old_view;
+  dayActionArg->r        = r;
+  dayActionArg->uuid     = &view_uuid;
+  dayActionArg->args     = day_arg;
 
-  viewsAddAction(v, help, '?', helpViewQuit, &helpActionArgs);
-  viewsAddAction(v, help, 'q', helpViewQuit, &helpActionArgs);
-  viewsAddAction(v, help, 'p', helpViewPreviousAction, &helpActionArgs);
-  viewsAddAction(v, help, 'n', helpViewNextAction, &helpActionArgs);
+  MEMCREATE(WEEK_ARG*, weekActionArg, calloc(1, sizeof(WEEK_ARG)));
+  weekActionArg->view     = &view;
+  weekActionArg->old_view = &old_view;
+  weekActionArg->r        = r;
+  weekActionArg->uuid     = &view_uuid;
+  weekActionArg->args     = week_arg;
+
+  MEMCREATE(MONTH_ARG*, monthActionArg, calloc(1, sizeof(MONTH_ARG)));
+  monthActionArg->view     = &view;
+  monthActionArg->old_view = &old_view;
+  monthActionArg->r        = r;
+  monthActionArg->uuid     = &view_uuid;
+  monthActionArg->args     = month_arg;
+
+  for (enum views _v = day; _v <= month; _v++)
+  {
+    viewsAddAction(v, _v, '?', helpViewOpen, &helpActionArg);
+    viewsAddAction(v, _v, 'q', quit, NULL);
+  }
+
+  viewsAddAction(v, help, '?', helpViewQuit, &helpActionArg);
+  viewsAddAction(v, help, 'q', helpViewQuit, &helpActionArg);
+  viewsAddAction(v, help, 'p', helpViewPreviousAction, &helpActionArg);
+  viewsAddAction(v, help, 'n', helpViewNextAction, &helpActionArg);
+
+  viewsAddAction(v, day, 'v', dayViewNext, &weekActionArg);
+  viewsAddAction(v, day, 'n', dayNext, &dayActionArg);
+  viewsAddAction(v, day, 'p', dayPrevious, &dayActionArg);
+
+  viewsAddAction(v, week, 'v', weekViewNext, &monthActionArg);
+  viewsAddAction(v, week, 'j', weekCursorRight, &weekActionArg);
+  viewsAddAction(v, week, 'l', weekCursorRight, &weekActionArg);
+  viewsAddAction(v, week, 'k', weekCursorLeft, &weekActionArg);
+  viewsAddAction(v, week, 'h', weekCursorLeft, &weekActionArg);
+  viewsAddAction(v, week, 'n', weekNext, &weekActionArg);
+  viewsAddAction(v, week, 'p', weekPrevious, &weekActionArg);
+
+  viewsAddAction(v, month, 'v', monthViewNext, &dayActionArg);
+  viewsAddAction(v, month, 'k', monthCursorUp, &monthActionArg);
+  viewsAddAction(v, month, 'j', monthCursorDown, &monthActionArg);
+  viewsAddAction(v, month, 'l', monthCursorRight, &monthActionArg);
+  viewsAddAction(v, month, 'h', monthCursorLeft, &monthActionArg);
+  viewsAddAction(v, month, 'n', monthNext, &monthActionArg);
+  viewsAddAction(v, month, 'p', monthPrevious, &monthActionArg);
 
   RENDER(r);
   int to_render = 0;
@@ -121,120 +144,16 @@ int main(void)
       to_render = 0;
     }
   }
-  /* switch (ch) */
-  /* { */
-  /* case 'q': */
-  /*   if (opened_help) */
-  /*   { */
-  /*     renderableRemove(r, box_uuid); */
-  /*     opened_help = 0; */
-  /*     RENDER_BREAK(to_render); */
-  /*   } */
-  /*   endwin(); */
-  /*   goto leave; */
-  /* case 'j': */
-  /*   if (view_index == 1 && week_args[0] < 4) week_args[0]++; */
-  /*   if (view_index == 2 && month_args[0] < 19) month_args[0] += 5; */
-  /*   RENDER_BREAK(to_render); */
-  /* case 'k': */
-  /*   if (view_index == 1 && week_args[0] > 0) week_args[0]--; */
-  /*   if (view_index == 2 && month_args[0] > 4) month_args[0] -= 5; */
-  /*   RENDER_BREAK(to_render); */
-  /* case 'l': */
-  /*   if (view_index == 1 && week_args[0] < 4) week_args[0]++; */
-  /*   if (view_index == 2 && month_args[0] < 24) month_args[0]++; */
-  /*   RENDER_BREAK(to_render); */
-  /* case 'h': */
-  /*   if (view_index == 1 && week_args[0] > 0) week_args[0]--; */
-  /*   if (view_index == 2 && month_args[0] > 0) month_args[0]--; */
-  /*   RENDER_BREAK(to_render); */
-  /* case 'v': */
-  /*   view_index += 1; */
-  /*   view_index %= 3; */
-  /*   UPDATE_VIEW(view_index, r, view_uuid); */
-  /*   if (view_index == 1) updateArgument(r, view_uuid, week_args); */
-  /*   if (view_index == 2) updateArgument(r, view_uuid, month_args); */
-  /*   RENDER_BREAK(to_render); */
-  /* case ' ': */
-  /*   view_index = 0; */
-  /*   UPDATE_VIEW(view_index, r, view_uuid); */
-  /*   RENDER_BREAK(to_render); */
-  /* case 'n': */
-  /*   if (opened_help) */
-  /*   { */
-  /*     viewsExecuteAction(v, 0, 'n', helpActionArgs); */
-  /*     RENDER_BREAK(to_render); */
-  /*   } */
-  /*   if (view_index == 2) */
-  /*   { */
-  /*     CASC_MONTH_INCR(month_args[1], month_args[2]); */
-  /*     RENDER_BREAK(to_render); */
-  /*   } */
-  /*   if (view_index == 1) */
-  /*   { */
-  /*     do { */
-  /*       CASC_WEEK_INCR(week_args[1], week_args[2], week_args[3]); */
-  /*     } while (do_skip_week(week_args[1], week_args[2], week_args[3])); */
-  /*     RENDER_BREAK(to_render); */
-  /*   } */
-  /*   if (view_index == 0) */
-  /*   { */
-  /*     do { */
-  /*       CASC_DAY_INCR(day_args[0], day_args[1], day_args[2]); */
-  /*     } while (do_skip_day(day_args[0], day_args[1], day_args[2])); */
-  /*     RENDER_BREAK(to_render); */
-  /*   } */
-  /*   break; */
-  /* case 'p': */
-  /*   if (opened_help && help_page > 0) */
-  /*   { */
-  /*     help_page--; */
-  /*     updateArgument(r, box_uuid, &help_page); */
-  /*     RENDER_BREAK(to_render); */
-  /*   } */
-  /*   if (view_index == 2) */
-  /*   { */
-  /*     CASC_MONTH_DECR(month_args[1], month_args[2]); */
-  /*     MONTH_LIMIT(month_args[1], month_args[2]); */
-  /*     RENDER_BREAK(to_render); */
-  /*   } */
-  /*   if (view_index == 1) */
-  /*   { */
-  /*     do { */
-  /*       CASC_WEEK_DECR(week_args[1], week_args[2], week_args[3]); */
-  /*       WDMONTH_LIMIT(week_args[1], week_args[2], week_args[3]) */
-  /*     } while (do_skip_week(week_args[1], week_args[2], week_args[3])); */
-
-  /*     RENDER_BREAK(to_render); */
-  /*   } */
-  /*   if (view_index == 0) */
-  /*   { */
-  /*     do { */
-  /*       CASC_DAY_DECR(day_args[0], day_args[1], day_args[2]); */
-  /*       WDMONTH_LIMIT(day_args[0], day_args[1], day_args[2]) */
-  /*     } while (do_skip_day(day_args[0], day_args[1], day_args[2])); */
-
-  /*     RENDER_BREAK(to_render); */
-  /*   } */
-
-  /*   break; */
-  /* case KEY_RESIZE: RENDER_BREAK(to_render); */
-  /* if (view_index == 2) updateArgument(r, view_uuid, month_args); */
-  /* if (view_index == 1) updateArgument(r, view_uuid, week_args); */
-  /* if (view_index == 0) updateArgument(r, view_uuid, day_args); */
-
-  /* if (to_render) */
-  /* { */
-  /*   render(r); */
-  /*   to_render = 0; */
-  /* } */
 leave:
   freeRenderable(r);
   viewsFree(v);
   free(box_args);
-  free(day_args);
-  free(week_args);
-  free(month_args);
-  free(helpActionArgs);
+  free(day_arg);
+  free(week_arg);
+  free(month_arg);
+  free(helpActionArg);
+  free(dayActionArg);
+  free(weekActionArg);
+  free(monthActionArg);
   return EXIT_SUCCESS;
 }
