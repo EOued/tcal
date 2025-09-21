@@ -30,30 +30,17 @@ int main(void)
   renderableAdd(r, quit_text, NULL);
 
   MEMCREATE(int*, box_args, malloc(4 * sizeof(int)));
-  MEMCREATE(int*, day_arg, calloc(3, sizeof(int)));
-  MEMCREATE(int*, week_arg, calloc(4, sizeof(int)));
-  MEMCREATE(int*, month_arg, calloc(3, sizeof(int)));
+  MEMCREATE(int*, date_arg, malloc(4 * sizeof(int)));
 
   // Get current month and year
   time_t t          = time(NULL);
   struct tm* tminfo = localtime(&t);
 
-  struct tm first_day = *tminfo;
-  first_day.tm_mday   = 1;
-  mktime(&first_day);
+  date_arg[0] = tminfo->tm_mday;
+  date_arg[1] = tminfo->tm_mon;
+  date_arg[2] = tminfo->tm_year + 1900;
 
-  _MONTH(tminfo, month_arg[1]);
-  _YEAR(tminfo, month_arg[2]);
-
-  _WEEK(tminfo, first_day, week_arg[1]);
-  _MONTH(tminfo, week_arg[2]);
-  _YEAR(tminfo, week_arg[3]);
-
-  _DAY(tminfo, day_arg[0]);
-  _MONTH(tminfo, day_arg[1]);
-  _YEAR(tminfo, day_arg[2]);
-
-  int view_uuid = renderableAdd(r, day_grid, day_arg);
+  int view_uuid = renderableAdd(r, day_grid, date_arg);
 
   uint help_page = 0;
 
@@ -63,33 +50,32 @@ int main(void)
   for (enum views _v = help; _v <= month; _v++) createView(v, _v);
 
   MEMCREATE(HELP_ARG*, helpActionArg, calloc(1, sizeof(HELP_ARG)));
-  helpActionArg->view      = &view;
-  helpActionArg->old_view  = &old_view;
-  helpActionArg->r         = r;
-  helpActionArg->uuid      = &box_uuid;
-  helpActionArg->args      = &help_page;
-  helpActionArg->_help_box = _help_box;
+  helpActionArg->view     = &view;
+  helpActionArg->old_view = &old_view;
+  helpActionArg->r        = r;
+  helpActionArg->uuid     = &box_uuid;
+  helpActionArg->args     = &help_page;
 
   MEMCREATE(DAY_ARG*, dayActionArg, calloc(1, sizeof(DAY_ARG)));
   dayActionArg->view     = &view;
   dayActionArg->old_view = &old_view;
   dayActionArg->r        = r;
   dayActionArg->uuid     = &view_uuid;
-  dayActionArg->args     = day_arg;
+  dayActionArg->args     = date_arg;
 
   MEMCREATE(WEEK_ARG*, weekActionArg, calloc(1, sizeof(WEEK_ARG)));
   weekActionArg->view     = &view;
   weekActionArg->old_view = &old_view;
   weekActionArg->r        = r;
   weekActionArg->uuid     = &view_uuid;
-  weekActionArg->args     = week_arg;
+  weekActionArg->args     = date_arg;
 
   MEMCREATE(MONTH_ARG*, monthActionArg, calloc(1, sizeof(MONTH_ARG)));
   monthActionArg->view     = &view;
   monthActionArg->old_view = &old_view;
   monthActionArg->r        = r;
   monthActionArg->uuid     = &view_uuid;
-  monthActionArg->args     = month_arg;
+  monthActionArg->args     = date_arg;
 
   for (enum views _v = day; _v <= month; _v++)
   {
@@ -105,6 +91,7 @@ int main(void)
   viewsAddAction(v, day, 'v', dayViewNext, &weekActionArg);
   viewsAddAction(v, day, 'n', dayNext, &dayActionArg);
   viewsAddAction(v, day, 'p', dayPrevious, &dayActionArg);
+  viewsAddAction(v, day, 't', dayToday, &dayActionArg);
 
   viewsAddAction(v, week, 'v', weekViewNext, &monthActionArg);
   viewsAddAction(v, week, 'j', weekCursorRight, &weekActionArg);
@@ -148,9 +135,7 @@ leave:
   freeRenderable(r);
   viewsFree(v);
   free(box_args);
-  free(day_arg);
-  free(week_arg);
-  free(month_arg);
+  free(date_arg);
   free(helpActionArg);
   free(dayActionArg);
   free(weekActionArg);

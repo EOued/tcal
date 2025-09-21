@@ -20,7 +20,6 @@ typedef struct
   enum views* old_view;
   renderable* r;
   int* uuid;
-  void (*_help_box)(void*);
   void* args;
 } HELP_ARG;
 
@@ -77,6 +76,7 @@ int helpViewQuit(void* varg);
 int dayViewNext(void* varg);
 int dayNext(void* varg);
 int dayPrevious(void* varg);
+int dayToday(void* varg);
 int weekCursorRight(void* varg);
 int weekCursorLeft(void* varg);
 int weekViewNext(void* varg);

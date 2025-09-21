@@ -70,80 +70,25 @@
     view_uuid = renderableAdd(renderable, view_func, view_args);               \
   } while (0)
 
-#define _DAY(tminfo, day) day = tminfo->tm_mday
-#define _WEEK(tminfo, fday, week)                                              \
-  week = (tminfo->tm_mday + fday.tm_wday - 1) / 7
-#define _MONTH(tminfo, month) month = tminfo->tm_mon
-#define _YEAR(tminfo, year) year = tminfo->tm_year + 1900
-
 #define IS_LEAP(year)                                                          \
   (year % 4 == 0) && ((year % 100 != 0) || (year % 400 == 0))
 #define FIRST_HALF(m, y)                                                       \
   ((31 * !(m % 2)) + (28 + (IS_LEAP(y)) * (m == 1) + 2 * (m > 1)) * (m % 2))
 #define SECOND_HALF(m) (31 * (m % 2) + 30 * !(m % 2))
 #define TOTAL_MONTH_DAY(m, y)                                                  \
-  (m < 7) * FIRST_HALF(m, y) + (m >= 7) * SECOND_HALF(m)
+  ((m < 7) * FIRST_HALF(m, y) + (m >= 7) * SECOND_HALF(m))
 
-#define CASC_MONTH_INCR(month, year)                                           \
-  do {                                                                         \
-    month = (month + 1) % 12;                                                  \
-    if (!month) year++;                                                        \
-  } while (0);
+#define GREGORIAN_ZELLER(q, m, K, J)                                           \
+  (q + (int)floor(13.0f * (m + 1) / 5) + K + (int)floor(K / 4.0f) +            \
+   (int)floor(J / 4.0f) + 5 * J) %                                             \
+      7
 
-#define CASC_MONTH_DECR(month, year)                                           \
-  do {                                                                         \
-    month = (month - 1 + 12) % 12;                                             \
-    if (month == 11) year--;                                                   \
-  } while (0);
-
-#define MONTH_LIMIT(month, year)                                               \
-  do {                                                                         \
-    if (year < 1900)                                                           \
-    {                                                                          \
-      year  = 1900;                                                            \
-      month = 0;                                                               \
-    }                                                                          \
-  } while (0);
-
-#define WDMONTH_LIMIT(other, month, year)                                      \
-  do {                                                                         \
-    if (year < 1900)                                                           \
-    {                                                                          \
-      year  = 1900;                                                            \
-      month = 0;                                                               \
-      other = 0;                                                               \
-    }                                                                          \
-  } while (0);
-
-#define CASC_WEEK_INCR(week, month, year)                                      \
-  do {                                                                         \
-    week = (week + 1) % 5;                                                     \
-    if (!week) CASC_MONTH_INCR(month, year);                                   \
-  } while (0);
-
-#define CASC_WEEK_DECR(week, month, year)                                      \
-  do {                                                                         \
-    week = (week - 1 + 5) % 5;                                                 \
-    if (week == 4) CASC_MONTH_DECR(month, year);                               \
-  } while (0);
-
-#define CASC_DAY_INCR(day, month, year)                                        \
-  do {                                                                         \
-    if (++day > TOTAL_MONTH_DAY(month, year))                                  \
-    {                                                                          \
-      day = 1;                                                                 \
-      CASC_MONTH_INCR(month, year);                                            \
-    }                                                                          \
-  } while (0);
-
-#define CASC_DAY_DECR(day, month, year)                                        \
-  do {                                                                         \
-    if (--day < 1)                                                             \
-    {                                                                          \
-      CASC_MONTH_DECR(month, year);                                            \
-      day = TOTAL_MONTH_DAY(month, year);                                      \
-    }                                                                          \
-  } while (0);
+#define ISO_ZELLER(d, m, y)                                                    \
+  (GREGORIAN_ZELLER(d, (m + 1) + (m + 1 < 3 ? 12 : 0),                         \
+                    (m >= 2 ? y : y - 1) % 100,                                \
+                    (int)floor((m >= 2 ? y : y - 1) / 100)) +                  \
+   5) %                                                                        \
+      7
 
 #define uint unsigned int
 #endif
