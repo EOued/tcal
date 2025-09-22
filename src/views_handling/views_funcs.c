@@ -48,33 +48,33 @@ int helpViewQuit(void* varg)
   return 0;
 }
 
-int dayViewNext(void* varg)
+int dayView(void* varg)
 {
   DATE_ARG** _arg = (DATE_ARG**)varg;
   DATE_ARG* arg   = *_arg;
-  *arg->old_view  = day;
+  *arg->old_view  = *arg->view;
+  *arg->view      = day;
+  UPDATE_VIEW(arg->r, *arg->uuid, day_grid, arg->args);
+  return 0;
+}
+
+int weekView(void* varg)
+{
+  DATE_ARG** _arg = (DATE_ARG**)varg;
+  DATE_ARG* arg   = *_arg;
+  *arg->old_view  = *arg->view;
   *arg->view      = week;
   UPDATE_VIEW(arg->r, *arg->uuid, week_grid, arg->args);
   return 0;
 }
 
-int weekViewNext(void* varg)
+int monthView(void* varg)
 {
   DATE_ARG** _arg = (DATE_ARG**)varg;
   DATE_ARG* arg   = *_arg;
-  *arg->old_view  = month;
+  *arg->old_view  = *arg->view;
   *arg->view      = month;
   UPDATE_VIEW(arg->r, *arg->uuid, month_grid, arg->args);
-  return 0;
-}
-
-int monthViewNext(void* varg)
-{
-  DATE_ARG** _arg = (DATE_ARG**)varg;
-  DATE_ARG* arg   = *_arg;
-  *arg->old_view  = day;
-  *arg->view      = day;
-  UPDATE_VIEW(arg->r, *arg->uuid, day_grid, arg->args);
   return 0;
 }
 
@@ -82,8 +82,8 @@ int dayNext(void* varg)
 {
   DATE_ARG** _arg = (DATE_ARG**)varg;
   DATE_ARG* arg   = *_arg;
-  int* dargs      = (int*)arg->args;
-  DAY_INCR(dargs);
+  int* args       = (int*)arg->args;
+  DAY_INCR(args);
   return 0;
 }
 
@@ -91,8 +91,8 @@ int dayPrevious(void* varg)
 {
   DATE_ARG** _arg = (DATE_ARG**)varg;
   DATE_ARG* arg   = *_arg;
-  int* dargs      = (int*)arg->args;
-  DAY_DECR(dargs);
+  int* args       = (int*)arg->args;
+  DAY_DECR(args);
   return 0;
 }
 
@@ -100,8 +100,8 @@ int weekNext(void* varg)
 {
   DATE_ARG** _arg = (DATE_ARG**)varg;
   DATE_ARG* arg   = *_arg;
-  int* wargs      = (int*)arg->args;
-  WEEK_INCR(wargs);
+  int* args       = (int*)arg->args;
+  WEEK_INCR(args);
   return 0;
 }
 
@@ -109,8 +109,8 @@ int weekPrevious(void* varg)
 {
   DATE_ARG** _arg = (DATE_ARG**)varg;
   DATE_ARG* arg   = *_arg;
-  int* wargs      = (int*)arg->args;
-  WEEK_DECR(wargs);
+  int* args       = (int*)arg->args;
+  WEEK_DECR(args);
   return 0;
 }
 
@@ -118,8 +118,8 @@ int monthNext(void* varg)
 {
   DATE_ARG** _arg = (DATE_ARG**)varg;
   DATE_ARG* arg   = *_arg;
-  int* margs      = (int*)arg->args;
-  MONTH_INCR(margs);
+  int* args       = (int*)arg->args;
+  MONTH_INCR(args);
   return 0;
 }
 
@@ -127,8 +127,8 @@ int monthPrevious(void* varg)
 {
   DATE_ARG** _arg = (DATE_ARG**)varg;
   DATE_ARG* arg   = *_arg;
-  int* margs      = (int*)arg->args;
-  MONTH_DECR(margs);
+  int* args       = (int*)arg->args;
+  MONTH_DECR(args);
   return 0;
 }
 

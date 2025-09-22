@@ -63,10 +63,16 @@ int main(void)
   dateActionArg->uuid     = &view_uuid;
   dateActionArg->args     = date_arg;
 
-  for (enum views _v = day; _v <= month; _v++)
+  for (enum views _v = help; _v <= month; _v++)
   {
-    viewsAddAction(v, _v, '?', helpViewOpen, &helpActionArg);
-    viewsAddAction(v, _v, 'q', quit, NULL);
+    viewsAddAction(v, _v, 'd', dayView, &dateActionArg);
+    viewsAddAction(v, _v, 'w', weekView, &dateActionArg);
+    viewsAddAction(v, _v, 'm', monthView, &dateActionArg);
+    if (_v != help)
+    {
+      viewsAddAction(v, _v, '?', helpViewOpen, &helpActionArg);
+      viewsAddAction(v, _v, 'q', quit, NULL);
+    }
   }
 
   viewsAddAction(v, help, '?', helpViewQuit, &helpActionArg);
@@ -74,12 +80,9 @@ int main(void)
   viewsAddAction(v, help, 'p', helpViewPreviousAction, &helpActionArg);
   viewsAddAction(v, help, 'n', helpViewNextAction, &helpActionArg);
 
-  viewsAddAction(v, day, 'v', dayViewNext, &dateActionArg);
   viewsAddAction(v, day, 'n', dayNext, &dateActionArg);
   viewsAddAction(v, day, 'p', dayPrevious, &dateActionArg);
-  // viewsAddAction(v, day, 't', dayToday, &dayActionArg);
 
-  viewsAddAction(v, week, 'v', weekViewNext, &dateActionArg);
   viewsAddAction(v, week, 'j', dayNext, &dateActionArg);
   viewsAddAction(v, week, 'l', dayNext, &dateActionArg);
   viewsAddAction(v, week, 'k', dayPrevious, &dateActionArg);
@@ -87,7 +90,6 @@ int main(void)
   viewsAddAction(v, week, 'n', weekNext, &dateActionArg);
   viewsAddAction(v, week, 'p', weekPrevious, &dateActionArg);
 
-  viewsAddAction(v, month, 'v', monthViewNext, &dateActionArg);
   viewsAddAction(v, month, 'k', weekPrevious, &dateActionArg);
   viewsAddAction(v, month, 'j', weekNext, &dateActionArg);
   viewsAddAction(v, month, 'l', dayNext, &dateActionArg);
