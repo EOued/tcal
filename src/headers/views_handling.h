@@ -37,9 +37,9 @@ typedef struct
 views* viewsInit(void);
 void viewsFree(views* v);
 void createView(views* v, uint uuid);
-void viewsAddAction(views* views, uint uuid, char character,
+void viewsAddAction(views* views, int uuid, char character,
                     int (*action)(void*), void* args);
-int viewsExecuteAction(views* views, uint uuid, char character);
+int viewsExecuteAction(views* views, int uuid, char character);
 
 // views_funcs
 

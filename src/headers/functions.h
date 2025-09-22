@@ -42,7 +42,7 @@ int week_nbr(int day, MONTH m, int year);
 
 struct fHASH_NODE
 {
-  uint key;
+  int key;
   int (*element)(void*);
   struct fHASH_NODE* next;
 };
@@ -54,14 +54,14 @@ typedef struct
 
 fhashmap* fhashmapInit(void);
 void fhashmapFree(fhashmap* map);
-void fhashmapInsert(fhashmap* map, uint key, int (*element)(void*));
-int (*fhashmapFind(fhashmap* map, uint key))(void*);
+void fhashmapInsert(fhashmap* map, int key, int (*element)(void*));
+int (*fhashmapFind(fhashmap* map, int key))(void*);
 
 // HASHMAP
 
 struct HASH_NODE
 {
-  uint key;
+  int key;
   void* element;
   struct HASH_NODE* next;
 };
@@ -73,7 +73,7 @@ typedef struct
 
 hashmap* hashmapInit(void);
 void hashmapFree(hashmap* map, void (*freeFunc)(void*));
-void hashmapInsert(hashmap* map, uint key, void* element);
-void* hashmapFind(hashmap* map, uint key);
+void hashmapInsert(hashmap* map, int key, void* element);
+void* hashmapFind(hashmap* map, int key);
 
 #endif

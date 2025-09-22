@@ -25,7 +25,7 @@ void fhashmapFree(fhashmap* map)
   return;
 }
 
-void fhashmapInsert(fhashmap* map, uint key, int (*element)(void*))
+void fhashmapInsert(fhashmap* map, int key, int (*element)(void*))
 {
   if (!map) return;
   MEMCREATE(struct fHASH_NODE*, node, calloc(1, sizeof(struct fHASH_NODE)));
@@ -35,7 +35,7 @@ void fhashmapInsert(fhashmap* map, uint key, int (*element)(void*))
   map->start    = node;
   return;
 }
-int (*fhashmapFind(fhashmap* map, uint key))(void*)
+int (*fhashmapFind(fhashmap* map, int key))(void*)
 {
   if (!map) return NULL;
   struct fHASH_NODE* node = map->start;
@@ -72,7 +72,7 @@ void hashmapFree(hashmap* map, void (*freeFunc)(void*))
   return;
 }
 
-void hashmapInsert(hashmap* map, uint key, void* element)
+void hashmapInsert(hashmap* map, int key, void* element)
 {
   if (!map) return;
   MEMCREATE(struct HASH_NODE*, node, calloc(1, sizeof(struct HASH_NODE)));
@@ -82,7 +82,7 @@ void hashmapInsert(hashmap* map, uint key, void* element)
   map->start    = node;
   return;
 }
-void* hashmapFind(hashmap* map, uint key)
+void* hashmapFind(hashmap* map, int key)
 {
   if (!map) return NULL;
   struct HASH_NODE* node = map->start;

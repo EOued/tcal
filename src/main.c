@@ -67,17 +67,12 @@ int main(void)
   dateActionArg->uuid     = &view_uuid;
   dateActionArg->args     = date_arg;
 
-  for (enum views _v = help; _v <= month; _v++)
-  {
-    viewsAddAction(v, _v, 'd', dayView, &dateActionArg);
-    viewsAddAction(v, _v, 'w', weekView, &dateActionArg);
-    viewsAddAction(v, _v, 'm', monthView, &dateActionArg);
-    if (_v != help)
-    {
-      viewsAddAction(v, _v, '?', helpViewOpen, &helpActionArg);
-      viewsAddAction(v, _v, 'q', quit, NULL);
-    }
-  }
+  // top-level
+  viewsAddAction(v, -1, 'd', dayView, &dateActionArg);
+  viewsAddAction(v, -1, 'w', weekView, &dateActionArg);
+  viewsAddAction(v, -1, 'm', monthView, &dateActionArg);
+  viewsAddAction(v, -1, '?', helpViewOpen, &helpActionArg);
+  viewsAddAction(v, -1, 'q', quit, NULL);
 
   viewsAddAction(v, help, '?', helpViewQuit, &helpActionArg);
   viewsAddAction(v, help, 'q', helpViewQuit, &helpActionArg);
@@ -112,8 +107,11 @@ int main(void)
     case KEY_RESIZE: RENDER_BREAK(to_render);
     default:
     {
+      // -1: Action not found in current level/toplevel
+      // 0: Action found, executed successfully
+      // 1: Action found, close window
       int arg = viewsExecuteAction(v, view, ch);
-      if (arg) goto leave;
+      if (arg > 0) goto leave;
       RENDER_BREAK(to_render);
     }
     }

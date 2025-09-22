@@ -40,7 +40,7 @@ int viewExecuteAction(view* v, char character)
 {
   int (*action)(void*) = fhashmapFind(v->actionsMap, (uint)character);
   void* args           = hashmapFind(v->args, (uint)character);
-  if (!action) return 0;
+  if (!action) return -1;
   return action(args);
 }
 
@@ -50,6 +50,8 @@ views* viewsInit(void)
 {
   MEMCREATE(views*, v, calloc(1, sizeof(views)));
   v->views = hashmapInit();
+  // top-level view
+  createView(v, -1);
   return v;
 }
 
@@ -68,7 +70,7 @@ void createView(views* v, uint uuid)
   return;
 }
 
-void viewsAddAction(views* views, uint uuid, char character,
+void viewsAddAction(views* views, int uuid, char character,
                     int (*action)(void*), void* args)
 {
   view* _v = hashmapFind(views->views, uuid);
@@ -77,9 +79,12 @@ void viewsAddAction(views* views, uint uuid, char character,
   return;
 }
 
-int viewsExecuteAction(views* views, uint uuid, char character)
+int viewsExecuteAction(views* views, int uuid, char character)
 {
   view* _v = hashmapFind(views->views, uuid);
   if (!_v) return 0;
-  return viewExecuteAction(_v, character);
+  int action = viewExecuteAction(_v, character);
+  if (action == -1)
+    return viewExecuteAction(hashmapFind(views->views, -1), character);
+  return action;
 }
