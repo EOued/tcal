@@ -8,8 +8,7 @@
 
 int helpViewNextAction(void* varg)
 {
-  ARGS** _arg  = (ARGS**)varg;
-  ARGS* arg    = *_arg;
+  VIEW_CHECKS(varg);
   uint* ctrptr = (uint*)arg->args;
   (*ctrptr)++;
   updateArgument(arg->r, *arg->uuid, ctrptr);
@@ -18,10 +17,8 @@ int helpViewNextAction(void* varg)
 
 int helpViewPreviousAction(void* varg)
 {
-  ARGS** _arg  = (ARGS**)varg;
-  ARGS* arg    = *_arg;
+  VIEW_CHECKS(varg);
   uint* ctrptr = (uint*)arg->args;
-
   (*ctrptr)--;
   updateArgument(arg->r, *arg->uuid, ctrptr);
   return 0;
@@ -29,9 +26,8 @@ int helpViewPreviousAction(void* varg)
 
 int helpViewOpen(void* varg)
 {
+  VIEW_CHECKS(varg);
   if (varg == NULL) return 1;
-  ARGS** _arg    = (ARGS**)varg;
-  ARGS* arg      = *_arg;
   *arg->uuid     = renderableAdd(arg->r, _help_box, arg->args);
   *arg->old_view = *arg->view;
   *arg->view     = help;
@@ -40,8 +36,7 @@ int helpViewOpen(void* varg)
 
 int helpViewQuit(void* varg)
 {
-  ARGS** _arg = (ARGS**)varg;
-  ARGS* arg   = *_arg;
+  VIEW_CHECKS(varg);
   renderableRemove(arg->r, *arg->uuid);
   *arg->view     = *arg->old_view;
   *arg->old_view = help;
@@ -50,8 +45,7 @@ int helpViewQuit(void* varg)
 
 int dayView(void* varg)
 {
-  ARGS** _arg    = (ARGS**)varg;
-  ARGS* arg      = *_arg;
+  VIEW_CHECKS(varg);
   *arg->old_view = *arg->view;
   *arg->view     = day;
   UPDATE_VIEW(arg->r, *arg->uuid, day_grid, arg->args);
@@ -60,8 +54,7 @@ int dayView(void* varg)
 
 int weekView(void* varg)
 {
-  ARGS** _arg    = (ARGS**)varg;
-  ARGS* arg      = *_arg;
+  VIEW_CHECKS(varg);
   *arg->old_view = *arg->view;
   *arg->view     = week;
   UPDATE_VIEW(arg->r, *arg->uuid, week_grid, arg->args);
@@ -70,8 +63,7 @@ int weekView(void* varg)
 
 int monthView(void* varg)
 {
-  ARGS** _arg    = (ARGS**)varg;
-  ARGS* arg      = *_arg;
+  VIEW_CHECKS(varg);
   *arg->old_view = *arg->view;
   *arg->view     = month;
   UPDATE_VIEW(arg->r, *arg->uuid, month_grid, arg->args);
@@ -80,54 +72,48 @@ int monthView(void* varg)
 
 int dayNext(void* varg)
 {
-  ARGS** _arg = (ARGS**)varg;
-  ARGS* arg   = *_arg;
-  int* args   = (int*)arg->args;
+  VIEW_CHECKS(varg);
+  int* args = (int*)arg->args;
   DAY_INCR(args);
   return 0;
 }
 
 int dayPrevious(void* varg)
 {
-  ARGS** _arg = (ARGS**)varg;
-  ARGS* arg   = *_arg;
-  int* args   = (int*)arg->args;
+  VIEW_CHECKS(varg);
+  int* args = (int*)arg->args;
   DAY_DECR(args);
   return 0;
 }
 
 int weekNext(void* varg)
 {
-  ARGS** _arg = (ARGS**)varg;
-  ARGS* arg   = *_arg;
-  int* args   = (int*)arg->args;
+  VIEW_CHECKS(varg);
+  int* args = (int*)arg->args;
   WEEK_INCR(args);
   return 0;
 }
 
 int weekPrevious(void* varg)
 {
-  ARGS** _arg = (ARGS**)varg;
-  ARGS* arg   = *_arg;
-  int* args   = (int*)arg->args;
+  VIEW_CHECKS(varg);
+  int* args = (int*)arg->args;
   WEEK_DECR(args);
   return 0;
 }
 
 int monthNext(void* varg)
 {
-  ARGS** _arg = (ARGS**)varg;
-  ARGS* arg   = *_arg;
-  int* args   = (int*)arg->args;
+  VIEW_CHECKS(varg);
+  int* args = (int*)arg->args;
   MONTH_INCR(args);
   return 0;
 }
 
 int monthPrevious(void* varg)
 {
-  ARGS** _arg = (ARGS**)varg;
-  ARGS* arg   = *_arg;
-  int* args   = (int*)arg->args;
+  VIEW_CHECKS(varg);
+  int* args = (int*)arg->args;
   MONTH_DECR(args);
   return 0;
 }

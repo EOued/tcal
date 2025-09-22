@@ -89,9 +89,9 @@ int main(void)
   viewsAddAction(v, week, 'n', weekNext, &dateActionArg);
   viewsAddAction(v, week, 'p', weekPrevious, &dateActionArg);
 
-  viewsAddAction(v, month, 'k', weekPrevious, &dateActionArg);
   viewsAddAction(v, month, 'j', weekNext, &dateActionArg);
   viewsAddAction(v, month, 'l', dayNext, &dateActionArg);
+  viewsAddAction(v, month, 'k', weekPrevious, &dateActionArg);
   viewsAddAction(v, month, 'h', dayPrevious, &dateActionArg);
   viewsAddAction(v, month, 'n', monthNext, &dateActionArg);
   viewsAddAction(v, month, 'p', monthPrevious, &dateActionArg);
