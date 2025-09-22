@@ -56,26 +56,12 @@ int main(void)
   helpActionArg->uuid     = &box_uuid;
   helpActionArg->args     = &help_page;
 
-  MEMCREATE(DAY_ARG*, dayActionArg, calloc(1, sizeof(DAY_ARG)));
-  dayActionArg->view     = &view;
-  dayActionArg->old_view = &old_view;
-  dayActionArg->r        = r;
-  dayActionArg->uuid     = &view_uuid;
-  dayActionArg->args     = date_arg;
-
-  MEMCREATE(WEEK_ARG*, weekActionArg, calloc(1, sizeof(WEEK_ARG)));
-  weekActionArg->view     = &view;
-  weekActionArg->old_view = &old_view;
-  weekActionArg->r        = r;
-  weekActionArg->uuid     = &view_uuid;
-  weekActionArg->args     = date_arg;
-
-  MEMCREATE(MONTH_ARG*, monthActionArg, calloc(1, sizeof(MONTH_ARG)));
-  monthActionArg->view     = &view;
-  monthActionArg->old_view = &old_view;
-  monthActionArg->r        = r;
-  monthActionArg->uuid     = &view_uuid;
-  monthActionArg->args     = date_arg;
+  MEMCREATE(DATE_ARG*, dateActionArg, calloc(1, sizeof(DATE_ARG)));
+  dateActionArg->view     = &view;
+  dateActionArg->old_view = &old_view;
+  dateActionArg->r        = r;
+  dateActionArg->uuid     = &view_uuid;
+  dateActionArg->args     = date_arg;
 
   for (enum views _v = day; _v <= month; _v++)
   {
@@ -88,26 +74,26 @@ int main(void)
   viewsAddAction(v, help, 'p', helpViewPreviousAction, &helpActionArg);
   viewsAddAction(v, help, 'n', helpViewNextAction, &helpActionArg);
 
-  viewsAddAction(v, day, 'v', dayViewNext, &weekActionArg);
-  viewsAddAction(v, day, 'n', dayNext, &dayActionArg);
-  viewsAddAction(v, day, 'p', dayPrevious, &dayActionArg);
+  viewsAddAction(v, day, 'v', dayViewNext, &dateActionArg);
+  viewsAddAction(v, day, 'n', dayNext, &dateActionArg);
+  viewsAddAction(v, day, 'p', dayPrevious, &dateActionArg);
   // viewsAddAction(v, day, 't', dayToday, &dayActionArg);
 
-  viewsAddAction(v, week, 'v', weekViewNext, &monthActionArg);
-  viewsAddAction(v, week, 'j', weekCursorRight, &weekActionArg);
-  viewsAddAction(v, week, 'l', weekCursorRight, &weekActionArg);
-  viewsAddAction(v, week, 'k', weekCursorLeft, &weekActionArg);
-  viewsAddAction(v, week, 'h', weekCursorLeft, &weekActionArg);
-  viewsAddAction(v, week, 'n', weekNext, &weekActionArg);
-  viewsAddAction(v, week, 'p', weekPrevious, &weekActionArg);
+  viewsAddAction(v, week, 'v', weekViewNext, &dateActionArg);
+  viewsAddAction(v, week, 'j', dayNext, &dateActionArg);
+  viewsAddAction(v, week, 'l', dayNext, &dateActionArg);
+  viewsAddAction(v, week, 'k', dayPrevious, &dateActionArg);
+  viewsAddAction(v, week, 'h', dayPrevious, &dateActionArg);
+  viewsAddAction(v, week, 'n', weekNext, &dateActionArg);
+  viewsAddAction(v, week, 'p', weekPrevious, &dateActionArg);
 
-  viewsAddAction(v, month, 'v', monthViewNext, &dayActionArg);
-  viewsAddAction(v, month, 'k', monthCursorUp, &monthActionArg);
-  viewsAddAction(v, month, 'j', monthCursorDown, &monthActionArg);
-  viewsAddAction(v, month, 'l', monthCursorRight, &monthActionArg);
-  viewsAddAction(v, month, 'h', monthCursorLeft, &monthActionArg);
-  viewsAddAction(v, month, 'n', monthNext, &monthActionArg);
-  viewsAddAction(v, month, 'p', monthPrevious, &monthActionArg);
+  viewsAddAction(v, month, 'v', monthViewNext, &dateActionArg);
+  viewsAddAction(v, month, 'k', weekPrevious, &dateActionArg);
+  viewsAddAction(v, month, 'j', weekNext, &dateActionArg);
+  viewsAddAction(v, month, 'l', dayNext, &dateActionArg);
+  viewsAddAction(v, month, 'h', dayPrevious, &dateActionArg);
+  viewsAddAction(v, month, 'n', monthNext, &dateActionArg);
+  viewsAddAction(v, month, 'p', monthPrevious, &dateActionArg);
 
   RENDER(r);
   int to_render = 0;
@@ -137,8 +123,6 @@ leave:
   free(box_args);
   free(date_arg);
   free(helpActionArg);
-  free(dayActionArg);
-  free(weekActionArg);
-  free(monthActionArg);
+  free(dateActionArg);
   return EXIT_SUCCESS;
 }

@@ -30,24 +30,7 @@ typedef struct
   renderable* r;
   int* uuid;
   void* args;
-} DAY_ARG;
-typedef struct
-{
-  enum views* view;
-  enum views* old_view;
-  renderable* r;
-  int* uuid;
-  void* args;
-} WEEK_ARG;
-
-typedef struct
-{
-  enum views* view;
-  enum views* old_view;
-  renderable* r;
-  int* uuid;
-  void* args;
-} MONTH_ARG;
+} DATE_ARG;
 
 typedef struct
 {
@@ -75,18 +58,12 @@ int helpViewOpen(void* varg);
 int helpViewQuit(void* varg);
 int dayViewNext(void* varg);
 int dayNext(void* varg);
+int weekViewNext(void* varg);
+int monthViewNext(void* varg);
 int dayPrevious(void* varg);
 int dayToday(void* varg);
-int weekCursorRight(void* varg);
-int weekCursorLeft(void* varg);
-int weekViewNext(void* varg);
 int weekNext(void* varg);
 int weekPrevious(void* varg);
-int monthCursorUp(void* varg);
-int monthCursorDown(void* varg);
-int monthCursorRight(void* varg);
-int monthCursorLeft(void* varg);
-int monthViewNext(void* varg);
 int monthNext(void* varg);
 int monthPrevious(void* varg);
 int quit(void* _);
