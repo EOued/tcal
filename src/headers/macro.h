@@ -90,5 +90,89 @@
    5) %                                                                        \
       7
 
+#define MONTH_INCR(args)                                                       \
+  do {                                                                         \
+    args[1]++;                                                                 \
+    if (args[1] > 11)                                                          \
+    {                                                                          \
+      args[1] = 0;                                                             \
+      args[2]++;                                                               \
+    }                                                                          \
+    args[0] = 0;                                                               \
+    DAY_INCR(args);                                                            \
+  } while (0)
+
+#define MONTH_DECR(args)                                                       \
+  do {                                                                         \
+    args[1]--;                                                                 \
+    if (args[1] < 0)                                                           \
+    {                                                                          \
+      args[1] = 0;                                                             \
+      if (args[2] != 1900) args[2]--;                                          \
+    }                                                                          \
+    args[0] = 0;                                                               \
+    DAY_DECR(args);                                                            \
+  } while (0)
+
+#define DAY_INCR(args)                                                         \
+  do {                                                                         \
+    args[0]++;                                                                 \
+    if (args[0] > TOTAL_MONTH_DAY(args[1], args[2]))                           \
+    {                                                                          \
+      args[0] = 1;                                                             \
+      args[1]++;                                                               \
+      if (args[1] > 11)                                                        \
+      {                                                                        \
+        args[1] = 0;                                                           \
+        args[2]++;                                                             \
+      }                                                                        \
+    }                                                                          \
+  } while (ISO_ZELLER(args[0], args[1], args[2]) > fri)
+
+#define DAY_DECR(args)                                                         \
+  do {                                                                         \
+    args[0]--;                                                                 \
+    if (args[0] < 1)                                                           \
+    {                                                                          \
+      args[1]--;                                                               \
+      if (args[1] < 0)                                                         \
+      {                                                                        \
+        args[1] = 0;                                                           \
+        if (args[2] != 1900) args[2]--;                                        \
+      }                                                                        \
+      args[0] += TOTAL_MONTH_DAY(args[1], args[2]);                            \
+    }                                                                          \
+  } while (ISO_ZELLER(args[0], args[1], args[2]) > fri)
+
+#define WEEK_INCR(args)                                                        \
+  do {                                                                         \
+    args[0] += 7;                                                              \
+    if (args[0] > TOTAL_MONTH_DAY(args[1], args[2]))                           \
+    {                                                                          \
+      args[0] %= TOTAL_MONTH_DAY(args[1], args[2]);                            \
+      args[1]++;                                                               \
+      if (args[1] > 11)                                                        \
+      {                                                                        \
+        args[1] = 0;                                                           \
+        args[2]++;                                                             \
+      }                                                                        \
+    }                                                                          \
+  } while (0)
+
+#define WEEK_DECR(args)                                                        \
+  do {                                                                         \
+    args[0] -= 7;                                                              \
+    if (args[0] < 1)                                                           \
+    {                                                                          \
+      args[1]--;                                                               \
+      if (args[1] < 0)                                                         \
+      {                                                                        \
+        args[1] = 0;                                                           \
+        if (args[2] != 1900) args[2]--;                                        \
+      }                                                                        \
+      args[0] += TOTAL_MONTH_DAY(args[1], args[2]);                            \
+    }                                                                          \
+  } while (0)
+
 #define uint unsigned int
 #endif

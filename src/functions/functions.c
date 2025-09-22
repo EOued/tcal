@@ -4,6 +4,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+int week_nbr(int day, MONTH m, int year)
+{
+  DAY month_first_day = ISO_ZELLER(1, m, year);
+  return (day + month_first_day - 1) / 7;
+}
+
 int* month_day(int month_week_number, DAY _week_day, MONTH m, int year)
 {
   int* res;

@@ -9,8 +9,8 @@ void day_grid(void* varg)
 {
   int* args               = (int*)varg;
   int day                 = args[0];
-  int month               = args[2];
-  int year                = args[3];
+  int month               = args[1];
+  int year                = args[2];
   char* tday[7]           = {" Monday", " Tuesday",  " Wednesday", " Thursday",
                              " Friday", " Saturday", " Sunday"};
   char* month_display[12] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun",
@@ -19,20 +19,19 @@ void day_grid(void* varg)
   mvprintw(0, COLS / 2, "%s, %d %s %d", tday[_week_day], day,
            month_display[month], year);
   draw_box(0, 1, COLS - 1, LINES - 2);
-  mvprintw(1, 0, "%d", TOTAL_MONTH_DAY(args[2], args[3]));
 }
 
 void week_grid(void* varg)
 {
   int* args               = (int*)varg;
   int day                 = args[0];
-  int week                = args[1];
-  int month               = args[2];
-  int year                = args[3];
+  int month               = args[1];
+  int year                = args[2];
+  int _week               = week_nbr(day, month, year);
   int index               = ISO_ZELLER(day, (MONTH)month, year);
   char* month_display[12] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun",
                              "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
-  mvprintw(0, COLS / 2 - 7, "Week %d - %s, %d", week + 1, month_display[month],
+  mvprintw(0, COLS / 2 - 7, "Week %d - %s, %d", _week + 1, month_display[month],
            year);
   // Each day
   double step   = COLS / 5;
@@ -51,7 +50,7 @@ void week_grid(void* varg)
     HLINE_BOXSPLIT(start, end, 4);
     attroff(COLOR_PAIR(1));
 
-    dm = month_day(week, (DAY)k, month, year);
+    dm = month_day(_week, (DAY)k, month, year);
     if (dm[1] != month) attron(COLOR_PAIR(2));
     mvprintw(3, (COLS / 10) + start - strlen(days[k]) / 2, "%s, %s %d",
              month_display[dm[1]], days[k], dm[0]);
@@ -64,10 +63,10 @@ void month_grid(void* varg)
 {
   int* args               = (int*)varg;
   int day                 = args[0];
-  int week                = args[1];
-  int month               = args[2];
-  int year                = args[3];
-  int index               = 5 * week + ISO_ZELLER(day, (MONTH)month, year);
+  int month               = args[1];
+  int year                = args[2];
+  int _week               = week_nbr(day, month, year);
+  int index               = 5 * _week + ISO_ZELLER(day, (MONTH)month, year);
   char* month_display[12] = {"January",   "February", "March",    "April",
                              "May",       "June",     "July",     "August",
                              "September", "October",  "November", "December"};

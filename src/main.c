@@ -30,7 +30,7 @@ int main(void)
   renderableAdd(r, quit_text, NULL);
 
   MEMCREATE(int*, box_args, malloc(4 * sizeof(int)));
-  MEMCREATE(int*, date_arg, malloc(4 * sizeof(int)));
+  MEMCREATE(int*, date_arg, malloc(3 * sizeof(int)));
 
   // Get current month and year
   time_t t          = time(NULL);
@@ -91,7 +91,7 @@ int main(void)
   viewsAddAction(v, day, 'v', dayViewNext, &weekActionArg);
   viewsAddAction(v, day, 'n', dayNext, &dayActionArg);
   viewsAddAction(v, day, 'p', dayPrevious, &dayActionArg);
-  viewsAddAction(v, day, 't', dayToday, &dayActionArg);
+  // viewsAddAction(v, day, 't', dayToday, &dayActionArg);
 
   viewsAddAction(v, week, 'v', weekViewNext, &monthActionArg);
   viewsAddAction(v, week, 'j', weekCursorRight, &weekActionArg);

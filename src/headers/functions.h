@@ -36,6 +36,7 @@ enum _day
 };
 
 int* month_day(int month_week_number, DAY _week_day, MONTH m, int year);
+int week_nbr(int day, MONTH m, int year);
 
 // fHASHMAP
 
