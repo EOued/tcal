@@ -40,6 +40,10 @@ int main(void)
   date_arg[1] = tminfo->tm_mon;
   date_arg[2] = tminfo->tm_year + 1900;
 
+  // Skips to next available day (useful is launched on a weekend)
+  DAY_DECR(date_arg);
+  DAY_INCR(date_arg);
+
   int view_uuid = renderableAdd(r, day_grid, date_arg);
 
   uint help_page = 0;
@@ -49,14 +53,14 @@ int main(void)
   enum views old_view = none;
   for (enum views _v = help; _v <= month; _v++) createView(v, _v);
 
-  MEMCREATE(HELP_ARG*, helpActionArg, calloc(1, sizeof(HELP_ARG)));
+  MEMCREATE(ARGS*, helpActionArg, calloc(1, sizeof(ARGS)));
   helpActionArg->view     = &view;
   helpActionArg->old_view = &old_view;
   helpActionArg->r        = r;
   helpActionArg->uuid     = &box_uuid;
   helpActionArg->args     = &help_page;
 
-  MEMCREATE(DATE_ARG*, dateActionArg, calloc(1, sizeof(DATE_ARG)));
+  MEMCREATE(ARGS*, dateActionArg, calloc(1, sizeof(ARGS)));
   dateActionArg->view     = &view;
   dateActionArg->old_view = &old_view;
   dateActionArg->r        = r;

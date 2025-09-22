@@ -21,16 +21,7 @@ typedef struct
   renderable* r;
   int* uuid;
   void* args;
-} HELP_ARG;
-
-typedef struct
-{
-  enum views* view;
-  enum views* old_view;
-  renderable* r;
-  int* uuid;
-  void* args;
-} DATE_ARG;
+} ARGS;
 
 typedef struct
 {
