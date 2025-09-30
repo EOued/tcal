@@ -6,7 +6,7 @@
 
 typedef struct
 {
-  int* date;
+  time_t date;
   calendar* cal_list;
   uint cal_list_capacity;
   uint cal_list_size;

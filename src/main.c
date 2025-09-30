@@ -32,25 +32,22 @@ int main(void)
 
   MEMCREATE(int*, box_args, malloc(4 * sizeof(int)));
   MEMCREATE(view_arguments*, view_args, calloc(1, sizeof(view_arguments)));
-  MEMCREATE(int*, date_arg, malloc(3 * sizeof(int)));
-
-  // Get current month and year
-  time_t t          = time(NULL);
-  struct tm* tminfo = localtime(&t);
-
-  date_arg[0] = tminfo->tm_mday;
-  date_arg[1] = tminfo->tm_mon;
-  date_arg[2] = tminfo->tm_year + 1900;
 
   calendar c = initCalendar("20250930T14:30Z", "20250929T15:30Z", "Egghunt",
                             "Sixers forbidden here", "Ludus");
 
-  view_args->date          = date_arg;
+  time_t now         = time(NULL);
+  struct tm tm_today = *localtime(&now);
+  tm_today.tm_hour   = 0;
+  tm_today.tm_min    = 0;
+  tm_today.tm_sec    = 0;
+
+  view_args->date          = mktime(&tm_today);
   view_args->cal_list      = &c;
   view_args->cal_list_size = 1;
   // Skips to next available day (useful is launched on a weekend)
-  DAY_DECR(date_arg);
-  DAY_INCR(date_arg);
+  DAY_DECR(view_args->date);
+  DAY_INCR(view_args->date);
 
   int view_uuid = renderableAdd(r, day_grid, view_args);
 
@@ -90,9 +87,9 @@ int main(void)
   viewsAddAction(v, day, 'n', dayNext, &dateActionArg);
   viewsAddAction(v, day, 'p', dayPrevious, &dateActionArg);
 
-  viewsAddAction(v, week, 'j', dayNext, &dateActionArg);
+  viewsAddAction(v, week, 'k', dayNext, &dateActionArg);
   viewsAddAction(v, week, 'l', dayNext, &dateActionArg);
-  viewsAddAction(v, week, 'k', dayPrevious, &dateActionArg);
+  viewsAddAction(v, week, 'j', dayPrevious, &dateActionArg);
   viewsAddAction(v, week, 'h', dayPrevious, &dateActionArg);
   viewsAddAction(v, week, 'n', weekNext, &dateActionArg);
   viewsAddAction(v, week, 'p', weekPrevious, &dateActionArg);
@@ -132,7 +129,6 @@ leave:
   freeRenderable(r);
   viewsFree(v);
   free(box_args);
-  free(date_arg);
   free(view_args);
   free(helpActionArg);
   free(dateActionArg);

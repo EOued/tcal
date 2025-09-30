@@ -6,6 +6,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define ONE_DAY 24 * 60 * 60
+
 #define ERRMSG(msg)                                                            \
   do {                                                                         \
     fprintf(stderr, #msg);                                                     \
@@ -90,88 +92,52 @@
    5) %                                                                        \
       7
 
+#define TIME_ZELLER(time)                                                      \
+  ISO_ZELLER(localtime(&time)->tm_mday, localtime(&time)->tm_mon,              \
+             localtime(&time)->tm_year + 1900)
+
 #define MONTH_INCR(args)                                                       \
   do {                                                                         \
-    args[1]++;                                                                 \
-    if (args[1] > 11)                                                          \
-    {                                                                          \
-      args[1] = 0;                                                             \
-      args[2]++;                                                               \
-    }                                                                          \
-    args[0] = 0;                                                               \
-    DAY_INCR(args);                                                            \
+    struct tm tm_next = *localtime(&args);                                     \
+    tm_next.tm_mday   = 1;                                                     \
+    tm_next.tm_mon++;                                                          \
+    args = mktime(&tm_next);                                                   \
   } while (0)
 
 #define MONTH_DECR(args)                                                       \
   do {                                                                         \
-    args[1]--;                                                                 \
-    if (args[1] < 0)                                                           \
-    {                                                                          \
-      args[1] = 0;                                                             \
-      if (args[2] != 1900) args[2]--;                                          \
-    }                                                                          \
-    args[0] = 0;                                                               \
-    DAY_DECR(args);                                                            \
+    struct tm tm_next = *localtime(&args);                                     \
+    tm_next.tm_mday   = 1;                                                     \
+    tm_next.tm_mon--;                                                          \
+    args = mktime(&tm_next);                                                   \
   } while (0)
 
 #define DAY_INCR(args)                                                         \
   do {                                                                         \
-    args[0]++;                                                                 \
-    if (args[0] > TOTAL_MONTH_DAY(args[1], args[2]))                           \
-    {                                                                          \
-      args[0] = 1;                                                             \
-      args[1]++;                                                               \
-      if (args[1] > 11)                                                        \
-      {                                                                        \
-        args[1] = 0;                                                           \
-        args[2]++;                                                             \
-      }                                                                        \
-    }                                                                          \
-  } while (ISO_ZELLER(args[0], args[1], args[2]) > fri)
+    struct tm tm_next = *localtime(&args);                                     \
+    tm_next.tm_mday++;                                                         \
+    args = mktime(&tm_next);                                                   \
+  } while (TIME_ZELLER(args) > fri)
 
 #define DAY_DECR(args)                                                         \
   do {                                                                         \
-    args[0]--;                                                                 \
-    if (args[0] < 1)                                                           \
-    {                                                                          \
-      args[1]--;                                                               \
-      if (args[1] < 0)                                                         \
-      {                                                                        \
-        args[1] = 0;                                                           \
-        if (args[2] != 1900) args[2]--;                                        \
-      }                                                                        \
-      args[0] += TOTAL_MONTH_DAY(args[1], args[2]);                            \
-    }                                                                          \
-  } while (ISO_ZELLER(args[0], args[1], args[2]) > fri)
+    struct tm tm_next = *localtime(&args);                                     \
+    tm_next.tm_mday--;                                                         \
+    args = mktime(&tm_next);                                                   \
+  } while (TIME_ZELLER(args) > fri)
 
 #define WEEK_INCR(args)                                                        \
   do {                                                                         \
-    args[0] += 7;                                                              \
-    if (args[0] > TOTAL_MONTH_DAY(args[1], args[2]))                           \
-    {                                                                          \
-      args[0] %= TOTAL_MONTH_DAY(args[1], args[2]);                            \
-      args[1]++;                                                               \
-      if (args[1] > 11)                                                        \
-      {                                                                        \
-        args[1] = 0;                                                           \
-        args[2]++;                                                             \
-      }                                                                        \
-    }                                                                          \
+    struct tm tm_next = *localtime(&args);                                     \
+    tm_next.tm_mday += 7;                                                      \
+    args = mktime(&tm_next);                                                   \
   } while (0)
 
 #define WEEK_DECR(args)                                                        \
   do {                                                                         \
-    args[0] -= 7;                                                              \
-    if (args[0] < 1)                                                           \
-    {                                                                          \
-      args[1]--;                                                               \
-      if (args[1] < 0)                                                         \
-      {                                                                        \
-        args[1] = 0;                                                           \
-        if (args[2] != 1900) args[2]--;                                        \
-      }                                                                        \
-      args[0] += TOTAL_MONTH_DAY(args[1], args[2]);                            \
-    }                                                                          \
+    struct tm tm_next = *localtime(&args);                                     \
+    tm_next.tm_mday -= 7;                                                      \
+    args = mktime(&tm_next);                                                   \
   } while (0)
 
 #define VIEW_CHECKS(varg)                                                      \

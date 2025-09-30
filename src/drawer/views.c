@@ -10,11 +10,10 @@
 void day_grid(void* varg)
 {
   view_arguments* _args   = (view_arguments*)varg;
-  int* args               = _args->date;
-  int day                 = args[0];
-  int month               = args[1];
-  int year                = args[2];
-  time_t d                = date(day, month, year);
+  time_t args             = _args->date;
+  int day                 = localtime(&args)->tm_mday;
+  int month               = localtime(&args)->tm_mon;
+  int year                = localtime(&args)->tm_year + 1900;
   char* tday[7]           = {" Monday", " Tuesday",  " Wednesday", " Thursday",
                              " Friday", " Saturday", " Sunday"};
   char* month_display[12] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun",
@@ -32,7 +31,7 @@ void day_grid(void* varg)
   while (index < _args->cal_list_size)
   {
     calendar c = _args->cal_list[index];
-    if (!is_same_day(d, c.start))
+    if (!is_same_day(args, c.start))
     {
       index++;
       if (passed_date) break;
@@ -48,10 +47,10 @@ void day_grid(void* varg)
 void week_grid(void* varg)
 {
   view_arguments* _args   = (view_arguments*)varg;
-  int* args               = _args->date;
-  int day                 = args[0];
-  int month               = args[1];
-  int year                = args[2];
+  time_t args             = _args->date;
+  int day                 = localtime(&args)->tm_mday;
+  int month               = localtime(&args)->tm_mon;
+  int year                = localtime(&args)->tm_year + 1900;
   int _week               = week_nbr(day, month, year);
   int index               = ISO_ZELLER(day, (MONTH)month, year);
   char* month_display[12] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun",
@@ -87,10 +86,10 @@ void week_grid(void* varg)
 void month_grid(void* varg)
 {
   view_arguments* _args   = (view_arguments*)varg;
-  int* args               = _args->date;
-  int day                 = args[0];
-  int month               = args[1];
-  int year                = args[2];
+  time_t args             = _args->date;
+  int day                 = localtime(&args)->tm_mday;
+  int month               = localtime(&args)->tm_mon;
+  int year                = localtime(&args)->tm_year + 1900;
   int _week               = week_nbr(day, month, year);
   int index               = 5 * _week + ISO_ZELLER(day, (MONTH)month, year);
   char* month_display[12] = {"January",   "February", "March",    "April",
