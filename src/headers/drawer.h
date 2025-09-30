@@ -1,7 +1,16 @@
 #ifndef DRAWER_H
 #define DRAWER_H
 
+#include "calendar.h"
 #include "macro.h"
+
+typedef struct
+{
+  int* date;
+  calendar* cal_list;
+  uint cal_list_capacity;
+  uint cal_list_size;
+} view_arguments;
 
 void day_grid(void* _);
 void week_grid(void* _);

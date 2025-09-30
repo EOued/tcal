@@ -73,15 +73,17 @@ int monthView(void* varg)
 int dayNext(void* varg)
 {
   VIEW_CHECKS(varg);
-  int* args = (int*)arg->args;
-  DAY_INCR(args);
+  view_arguments* v_arguments = (view_arguments*)arg->args;
+  int* date                   = v_arguments->date;
+  DAY_INCR(date);
   return 0;
 }
 
 int dayPrevious(void* varg)
 {
   VIEW_CHECKS(varg);
-  int* args = (int*)arg->args;
+  view_arguments* v_arguments = (view_arguments*)arg->args;
+  int* args                   = v_arguments->date;
   DAY_DECR(args);
   return 0;
 }
@@ -89,7 +91,8 @@ int dayPrevious(void* varg)
 int weekNext(void* varg)
 {
   VIEW_CHECKS(varg);
-  int* args = (int*)arg->args;
+  view_arguments* v_arguments = (view_arguments*)arg->args;
+  int* args                   = v_arguments->date;
   WEEK_INCR(args);
   return 0;
 }
@@ -97,7 +100,8 @@ int weekNext(void* varg)
 int weekPrevious(void* varg)
 {
   VIEW_CHECKS(varg);
-  int* args = (int*)arg->args;
+  view_arguments* v_arguments = (view_arguments*)arg->args;
+  int* args                   = v_arguments->date;
   WEEK_DECR(args);
   return 0;
 }
@@ -105,7 +109,8 @@ int weekPrevious(void* varg)
 int monthNext(void* varg)
 {
   VIEW_CHECKS(varg);
-  int* args = (int*)arg->args;
+  view_arguments* v_arguments = (view_arguments*)arg->args;
+  int* args                   = v_arguments->date;
   MONTH_INCR(args);
   return 0;
 }
@@ -113,7 +118,8 @@ int monthNext(void* varg)
 int monthPrevious(void* varg)
 {
   VIEW_CHECKS(varg);
-  int* args = (int*)arg->args;
+  view_arguments* v_arguments = (view_arguments*)arg->args;
+  int* args                   = v_arguments->date;
   MONTH_DECR(args);
   return 0;
 }

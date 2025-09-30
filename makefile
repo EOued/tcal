@@ -3,6 +3,8 @@ CFILES = \
 	drawer/views.c\
 	drawer/pages.c\
 	drawer/drawer.c\
+	parser/iso8601.c\
+	calendar/calendar.c\
 	views_handling/views_handling.c\
 	views_handling/views_funcs.c\
 	functions/functions.c\
@@ -14,7 +16,7 @@ SOURCES = $(foreach file, $(CFILES), $(SRCDIR)/$(file))
 OBJDIR = build/obj
 INCLUDE = -I$(SRCDIR)/headers
 OFILES = $(CFILES:.c=.o)
-SUBDIRS = drawer functions views_handling
+SUBDIRS = drawer functions views_handling parser calendar
 TARGETS = $(foreach file, $(OFILES), $(OBJDIR)/$(file))
 EXECDIR = build/target
 EXECNAME = tcal

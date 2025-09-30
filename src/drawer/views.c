@@ -1,16 +1,20 @@
+#include "calendar.h"
 #include "drawer.h"
 #include "functions.h"
 #include "macro.h"
 #include <math.h>
 #include <ncurses.h>
 #include <string.h>
+#include <time.h>
 
 void day_grid(void* varg)
 {
-  int* args               = (int*)varg;
+  view_arguments* _args   = (view_arguments*)varg;
+  int* args               = _args->date;
   int day                 = args[0];
   int month               = args[1];
   int year                = args[2];
+  time_t d                = date(day, month, year);
   char* tday[7]           = {" Monday", " Tuesday",  " Wednesday", " Thursday",
                              " Friday", " Saturday", " Sunday"};
   char* month_display[12] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun",
@@ -19,11 +23,32 @@ void day_grid(void* varg)
   mvprintw(0, COLS / 2, "%s, %d %s %d", tday[_week_day], day,
            month_display[month], year);
   draw_box(0, 1, COLS - 1, LINES - 2);
+
+  qsort(_args->cal_list, _args->cal_list_size, sizeof(calendar), compare_cal);
+  // Iterate until date have been skipped
+  int passed_date = 0;
+  uint index      = 0;
+  uint y          = 3;
+  while (index < _args->cal_list_size)
+  {
+    calendar c = _args->cal_list[index];
+    if (!is_same_day(d, c.start))
+    {
+      index++;
+      if (passed_date) break;
+      continue;
+    }
+    if (!passed_date) passed_date = 1;
+    mvprintw(y, 4, "%s | %s | %s", c.summary, c.description, c.location);
+    y++;
+    index++;
+  }
 }
 
 void week_grid(void* varg)
 {
-  int* args               = (int*)varg;
+  view_arguments* _args   = (view_arguments*)varg;
+  int* args               = _args->date;
   int day                 = args[0];
   int month               = args[1];
   int year                = args[2];
@@ -61,7 +86,8 @@ void week_grid(void* varg)
 
 void month_grid(void* varg)
 {
-  int* args               = (int*)varg;
+  view_arguments* _args   = (view_arguments*)varg;
+  int* args               = _args->date;
   int day                 = args[0];
   int month               = args[1];
   int year                = args[2];

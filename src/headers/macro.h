@@ -176,8 +176,7 @@
 
 #define VIEW_CHECKS(varg)                                                      \
   if (varg == NULL) return 0;                                                  \
-  ARGS** _arg = (ARGS**)varg;                                                  \
-  ARGS* arg   = *_arg;
+  ARGS* arg = *(ARGS**)varg;
 
 #define uint unsigned int
 #endif
