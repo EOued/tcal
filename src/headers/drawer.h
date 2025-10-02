@@ -7,9 +7,7 @@
 typedef struct
 {
   time_t date;
-  calendar* cal_list;
-  uint cal_list_capacity;
-  uint cal_list_size;
+  event_list* e_list;
 } view_arguments;
 
 void day_grid(void* _);

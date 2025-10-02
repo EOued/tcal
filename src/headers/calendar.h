@@ -12,13 +12,22 @@ typedef struct
   char* summary;
   char* description;
   char* location;
-} calendar;
+} event;
 
-calendar initCalendar(char* dtstart, char* dtend, char* summary,
-                      char* description, char* location);
-void freeCalendar(calendar c);
-time_t date(int day, MONTH month, int year);
+typedef struct
+{
+  event* e;
+  uint capacity;
+  uint size;
+} event_list;
+
+void freeEventList(event_list* l);
+event initCalendar(char* dtstart, char* dtend, char* summary, char* description,
+                   char* location);
+void printCal(event c);
+void freeCalendar(event c);
 int is_same_day(time_t t1, time_t t2);
 int compare_cal(const void* c1, const void* c2);
+event_list* test(void);
 
 #endif

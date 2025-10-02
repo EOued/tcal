@@ -33,18 +33,14 @@ int main(void)
   MEMCREATE(int*, box_args, malloc(4 * sizeof(int)));
   MEMCREATE(view_arguments*, view_args, calloc(1, sizeof(view_arguments)));
 
-  calendar c = initCalendar("20250930T14:30Z", "20250929T15:30Z", "Egghunt",
-                            "Sixers forbidden here", "Ludus");
-
   time_t now         = time(NULL);
   struct tm tm_today = *localtime(&now);
   tm_today.tm_hour   = 0;
   tm_today.tm_min    = 0;
   tm_today.tm_sec    = 0;
 
-  view_args->date          = mktime(&tm_today);
-  view_args->cal_list      = &c;
-  view_args->cal_list_size = 1;
+  view_args->date   = mktime(&tm_today);
+  view_args->e_list = test();
   // Skips to next available day (useful is launched on a weekend)
   DAY_DECR(view_args->date);
   DAY_INCR(view_args->date);
@@ -129,9 +125,9 @@ leave:
   freeRenderable(r);
   viewsFree(v);
   free(box_args);
+  freeEventList(view_args->e_list);
   free(view_args);
   free(helpActionArg);
   free(dateActionArg);
-  freeCalendar(c);
   return EXIT_SUCCESS;
 }

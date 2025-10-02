@@ -6,8 +6,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define ONE_DAY 24 * 60 * 60
-
 #define ERRMSG(msg)                                                            \
   do {                                                                         \
     fprintf(stderr, #msg);                                                     \
@@ -28,6 +26,9 @@
   type var;                                                                    \
   MEMCHK((var = alloc));
 
+#define FREE(ptr)                                                              \
+  if (ptr) free(ptr)
+
 #define REALLOC(size, capacity, size_t, ptr)                                   \
   do {                                                                         \
     if (capacity <= size)                                                      \
@@ -45,8 +46,6 @@
     render(renderable);                                                        \
     refresh();                                                                 \
   } while (0)
-
-#define MAX(a, b) (a > b ? a : b)
 
 #define MIN(a, b) (a < b ? a : b)
 

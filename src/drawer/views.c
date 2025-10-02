@@ -22,15 +22,25 @@ void day_grid(void* varg)
   mvprintw(0, COLS / 2, "%s, %d %s %d", tday[_week_day], day,
            month_display[month], year);
   draw_box(0, 1, COLS - 1, LINES - 2);
+  mvprintw(3, 3, "%d", _args->e_list->size);
 
-  qsort(_args->cal_list, _args->cal_list_size, sizeof(calendar), compare_cal);
+  qsort(_args->e_list->e, _args->e_list->size, sizeof(event), compare_cal);
   // Iterate until date have been skipped
   int passed_date = 0;
   uint index      = 0;
   uint y          = 3;
-  while (index < _args->cal_list_size)
+  while (index < _args->e_list->size)
   {
-    calendar c = _args->cal_list[index];
+    event c = _args->e_list->e[index];
+    char buffer[64];
+    struct tm* tm_info = localtime(&c.start);
+    strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", tm_info);
+    mvprintw(4, 3, "%s", buffer);
+    tm_info = localtime(&args);
+    strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", tm_info);
+    mvprintw(5, 3, "%s", buffer);
+    mvprintw(6, 3, "%s", c.summary);
+
     if (!is_same_day(args, c.start))
     {
       index++;

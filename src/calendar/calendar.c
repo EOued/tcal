@@ -3,33 +3,48 @@
 #include "string.h"
 #include <time.h>
 
-calendar initCalendar(char* dtstart, char* dtend, char* summary,
-                      char* description, char* location)
+void freeEventList(event_list* l)
 {
-  int n1     = strlen(summary) + 1;
-  int n2     = strlen(description) + 1;
-  int n3     = strlen(location) + 1;
-  calendar c = {.summary     = calloc(n1, sizeof(char)),
-                .description = calloc(n2, sizeof(char)),
-                .location    = calloc(n3, sizeof(char))};
+  for (uint i = 0; i < l->size; i++) freeCalendar(l->e[i]);
+  free(l->e);
+  free(l);
+  return;
+}
+
+event initCalendar(char* dtstart, char* dtend, char* summary, char* description,
+                   char* location)
+{
+  printf("INIT CALENDAR\n");
+  int n1  = strlen(summary) + 1;
+  int n2  = strlen(description) + 1;
+  int n3  = strlen(location) + 1;
+  event c = {.summary     = calloc(n1, sizeof(char)),
+             .description = calloc(n2, sizeof(char)),
+             .location    = calloc(n3, sizeof(char))};
 
   strncpy(c.summary, summary, n1);
   strncpy(c.description, description, n2);
   strncpy(c.location, location, n3);
+  printf("UWU %s\n", dtstart);
   c.start = parseiso8601utc(dtstart);
   c.end   = parseiso8601utc(dtend);
 
   return c;
 }
 
-time_t date(int day, MONTH month, int year)
+void printCal(event c)
 {
-  struct tm tt = {0};
-  tt.tm_mday   = day;
-  tt.tm_mon    = month;
-  tt.tm_year   = year - 1900;
-  tt.tm_isdst  = -1;
-  return mktime(&tt) - timezone;
+  printf("Summary: %s\n", c.summary);
+  printf("Description: %s\n", c.description);
+  printf("Location: %s\n", c.location);
+  char buffer[64];
+  struct tm* tm_info = localtime(&c.start);
+  strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", tm_info);
+  printf("dtstart: %s\n", buffer);
+  printf("DAY %d\n", tm_info->tm_mday);
+  tm_info = localtime(&c.end);
+  strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", tm_info);
+  printf("dtend: %s\n", buffer);
 }
 
 int date_index(time_t t1)
@@ -40,7 +55,7 @@ int date_index(time_t t1)
 
 int compare_cal(const void* c1, const void* c2)
 {
-  return date_index(((calendar*)c1)->start - ((calendar*)c2)->start);
+  return date_index(((event*)c1)->start - ((event*)c2)->start);
 }
 int is_same_day(time_t t1, time_t t2)
 {
@@ -51,7 +66,7 @@ int is_same_day(time_t t1, time_t t2)
           tm1.tm_mday == tm2.tm_mday);
 }
 
-void freeCalendar(calendar c)
+void freeCalendar(event c)
 {
   free(c.summary);
   free(c.description);

@@ -4,6 +4,8 @@ CFILES = \
 	drawer/pages.c\
 	drawer/drawer.c\
 	parser/iso8601.c\
+	parser/calendar_parser.c\
+	parser/ics.c\
 	calendar/calendar.c\
 	views_handling/views_handling.c\
 	views_handling/views_funcs.c\
@@ -43,13 +45,22 @@ $(shell mkdir -p $(OBJDIR))
 $(shell mkdir -p $(EXECDIR))
 $(foreach dir, $(SUBDIRS), $(shell mkdir -p $(OBJDIR)/$(dir)))
 
+# The final target depends on all object files
 # Rule to generate object files from source files
+
+$(EXEC): $(TARGETS)
+	$(GXX) $(FLAGS) $(INCLUDE) -o $(EXEC) $(TARGETS) $(POSTFLAGS)
+
+$(SRCDIR)/parser/ics.c: $(SRCDIR)/parser/ics.lex
+	lex -o $(SRCDIR)/parser/ics.c --header-file=$(SRCDIR)/headers/ics.h $(SRCDIR)/parser/ics.lex
+
+
 $(OBJDIR)/%.o: $(SRCDIR)/%.c
 	$(GXX) $(FLAGS) $(INCLUDE) -c $< -o $@ $(POSTFLAGS)
 
-# The final target depends on all object files
-$(EXEC): $(TARGETS)
-	$(GXX) $(FLAGS) $(INCLUDE) -o $(EXEC) $(TARGETS) $(POSTFLAGS)
+
+
+
 
 # Clean rule
 clean:
