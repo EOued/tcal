@@ -38,24 +38,25 @@ views* viewsInit(void);
 void viewsFree(views* v);
 void createView(views* v, uint uuid);
 void viewsAddAction(views* views, int uuid, char character,
-                    int (*action)(void*), void* args);
+                    int (*action)(ARGS**), ARGS** args);
 int viewsExecuteAction(views* views, int uuid, char character);
 
 // views_funcs
 
-int helpViewNextAction(void* varg);
-int helpViewPreviousAction(void* varg);
-int helpViewOpen(void* varg);
-int helpViewQuit(void* varg);
-int dayView(void* varg);
-int weekView(void* varg);
-int monthView(void* varg);
-int dayNext(void* varg);
-int dayPrevious(void* varg);
-int dayToday(void* varg);
-int weekNext(void* varg);
-int weekPrevious(void* varg);
-int monthNext(void* varg);
-int monthPrevious(void* varg);
-int quit(void* _);
+int helpViewNextAction(ARGS** args);
+int helpViewPreviousAction(ARGS** args);
+int helpViewOpen(ARGS** args);
+int helpViewQuit(ARGS** args);
+int dayView(ARGS** args);
+int weekView(ARGS** args);
+int monthView(ARGS** args);
+int dayNext(ARGS** args);
+int dayPrevious(ARGS** args);
+int dayToday(ARGS** args);
+int weekNext(ARGS** args);
+int weekPrevious(ARGS** args);
+int monthNext(ARGS** args);
+int monthPrevious(ARGS** args);
+int currentDate(ARGS** args);
+int quit(ARGS** _);
 #endif

@@ -83,6 +83,7 @@ int main(void)
   viewsAddAction(v, -1, 'w', weekView, &dateActionArg);
   viewsAddAction(v, -1, 'm', monthView, &dateActionArg);
   viewsAddAction(v, -1, '?', helpViewOpen, &helpActionArg);
+  viewsAddAction(v, -1, 't', currentDate, &dateActionArg);
   viewsAddAction(v, -1, 'q', quit, NULL);
 
   viewsAddAction(v, help, '?', helpViewQuit, &helpActionArg);
@@ -132,6 +133,7 @@ int main(void)
     }
   }
 leave:
+  quit(NULL);
   freeRenderable(r);
   viewsFree(v);
   free(box_args);

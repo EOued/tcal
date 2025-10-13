@@ -6,119 +6,132 @@
 #include <stdlib.h>
 #include <time.h>
 
-int helpViewNextAction(void* varg)
+int helpViewNextAction(ARGS** args)
 {
-  VIEW_CHECKS(varg);
-  uint* ctrptr = (uint*)arg->args;
+  if (!args) return 1;
+  uint* ctrptr = (*args)->args;
   (*ctrptr)++;
-  updateArgument(arg->r, *arg->uuid, ctrptr);
+  updateArgument((*args)->r, *(*args)->uuid, ctrptr);
   return 0;
 }
 
-int helpViewPreviousAction(void* varg)
+int helpViewPreviousAction(ARGS** args)
 {
-  VIEW_CHECKS(varg);
-  uint* ctrptr = (uint*)arg->args;
+  if (!args) return 1;
+  uint* ctrptr = (*args)->args;
   (*ctrptr)--;
-  updateArgument(arg->r, *arg->uuid, ctrptr);
+  updateArgument((*args)->r, *(*args)->uuid, ctrptr);
   return 0;
 }
 
-int helpViewOpen(void* varg)
+int helpViewOpen(ARGS** args)
 {
-  VIEW_CHECKS(varg);
-  if (varg == NULL) return 1;
-  *arg->uuid     = renderableAdd(arg->r, _help_box, arg->args);
-  *arg->old_view = *arg->view;
-  *arg->view     = help;
+  if (!args) return 1;
+  *(*args)->uuid     = renderableAdd((*args)->r, _help_box, (*args)->args);
+  *(*args)->old_view = *(*args)->view;
+  *(*args)->view     = help;
   return 0;
 }
 
-int helpViewQuit(void* varg)
+int helpViewQuit(ARGS** args)
 {
-  VIEW_CHECKS(varg);
-  renderableRemove(arg->r, *arg->uuid);
-  *arg->view     = *arg->old_view;
-  *arg->old_view = help;
+  if (!args) return 1;
+  renderableRemove((*args)->r, *(*args)->uuid);
+  *(*args)->view     = *(*args)->old_view;
+  *(*args)->old_view = help;
   return 0;
 }
 
-int dayView(void* varg)
+int dayView(ARGS** args)
 {
-  VIEW_CHECKS(varg);
-  *arg->old_view = *arg->view;
-  *arg->view     = day;
-  UPDATE_VIEW(arg->r, *arg->uuid, day_grid, arg->args);
+  if (!args) return 1;
+  *(*args)->old_view = *(*args)->view;
+  *(*args)->view     = day;
+  UPDATE_VIEW((*args)->r, *(*args)->uuid, day_grid, (*args)->args);
   return 0;
 }
 
-int weekView(void* varg)
+int weekView(ARGS** args)
 {
-  VIEW_CHECKS(varg);
-  *arg->old_view = *arg->view;
-  *arg->view     = week;
-  UPDATE_VIEW(arg->r, *arg->uuid, week_grid, arg->args);
+  if (!args) return 1;
+  *(*args)->old_view = *(*args)->view;
+  *(*args)->view     = week;
+  UPDATE_VIEW((*args)->r, *(*args)->uuid, week_grid, (*args)->args);
   return 0;
 }
 
-int monthView(void* varg)
+int monthView(ARGS** args)
 {
-  VIEW_CHECKS(varg);
-  *arg->old_view = *arg->view;
-  *arg->view     = month;
-  UPDATE_VIEW(arg->r, *arg->uuid, month_grid, arg->args);
+  if (!args) return 1;
+  *(*args)->old_view = *(*args)->view;
+  *(*args)->view     = month;
+  UPDATE_VIEW((*args)->r, *(*args)->uuid, month_grid, (*args)->args);
   return 0;
 }
 
-int dayNext(void* varg)
+int dayNext(ARGS** args)
 {
-  VIEW_CHECKS(varg);
-  view_arguments* v_arguments = (view_arguments*)arg->args;
+  if (!args) return 1;
+  view_arguments* v_arguments = (*args)->args;
   DAY_INCR(v_arguments->date);
   return 0;
 }
 
-int dayPrevious(void* varg)
+int dayPrevious(ARGS** args)
 {
-  VIEW_CHECKS(varg);
-  view_arguments* v_arguments = (view_arguments*)arg->args;
+  if (!args) return 1;
+  view_arguments* v_arguments = (*args)->args;
   DAY_DECR(v_arguments->date);
   return 0;
 }
 
-int weekNext(void* varg)
+int weekNext(ARGS** args)
 {
-  VIEW_CHECKS(varg);
-  view_arguments* v_arguments = (view_arguments*)arg->args;
+  if (!args) return 1;
+  view_arguments* v_arguments = (*args)->args;
   WEEK_INCR(v_arguments->date);
   return 0;
 }
 
-int weekPrevious(void* varg)
+int weekPrevious(ARGS** args)
 {
-  VIEW_CHECKS(varg);
-  view_arguments* v_arguments = (view_arguments*)arg->args;
+  if (!args) return 1;
+  view_arguments* v_arguments = (*args)->args;
   WEEK_DECR(v_arguments->date);
   return 0;
 }
 
-int monthNext(void* varg)
+int monthNext(ARGS** args)
 {
-  VIEW_CHECKS(varg);
-  view_arguments* v_arguments = (view_arguments*)arg->args;
+  if (!args) return 1;
+  view_arguments* v_arguments = (*args)->args;
   MONTH_INCR(v_arguments->date);
   return 0;
 }
 
-int monthPrevious(void* varg)
+int monthPrevious(ARGS** args)
 {
-  VIEW_CHECKS(varg);
-  view_arguments* v_arguments = (view_arguments*)arg->args;
+  if (!args) return 1;
+  view_arguments* v_arguments = (*args)->args;
   MONTH_DECR(v_arguments->date);
   return 0;
 }
 
-int quit(void* _)
+int currentDate(ARGS** args)
+{
+  time_t now                  = time(NULL);
+  view_arguments* v_arguments = (*args)->args;
+  struct tm tm_today          = *localtime(&now);
+  tm_today.tm_hour            = 0;
+  tm_today.tm_min             = 0;
+  tm_today.tm_sec             = 0;
+  v_arguments->date           = timegm(&tm_today);
+  DAY_DECR(v_arguments->date);
+  DAY_INCR(v_arguments->date);
+  return 0;
+}
+
+int quit(ARGS** _)
 {
   (void)_;
   endwin();

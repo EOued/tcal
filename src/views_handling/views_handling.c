@@ -30,9 +30,9 @@ void _viewFree(void* v)
   viewFree(_v);
 }
 
-void viewAddAction(view* v, char character, int (*action)(void*))
+void viewAddAction(view* v, char character, int (*action)(ARGS**))
 {
-  fhashmapInsert(v->actionsMap, (uint)character, action);
+  fhashmapInsert(v->actionsMap, (uint)character, (int (*)(void*))action);
   return;
 }
 
@@ -71,7 +71,7 @@ void createView(views* v, uint uuid)
 }
 
 void viewsAddAction(views* views, int uuid, char character,
-                    int (*action)(void*), void* args)
+                    int (*action)(ARGS**), ARGS** args)
 {
   view* _v = hashmapFind(views->views, uuid);
   viewAddAction(_v, character, action);
