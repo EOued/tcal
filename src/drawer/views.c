@@ -35,6 +35,7 @@ void day_grid(void* varg)
     char buffer[64];
     struct tm* tm_info = localtime(&c.start);
     strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", tm_info);
+    mvprintw(8, 3, "eée");
     mvprintw(4, 3, "%s", buffer);
     tm_info = localtime(&args);
     strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", tm_info);

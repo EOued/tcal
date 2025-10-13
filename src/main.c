@@ -4,6 +4,7 @@
 #include "macro.h"
 #include "renderer.h"
 #include "views_handling.h"
+#include <locale.h>
 #include <ncurses.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -22,6 +23,7 @@ void quit_text(void* _)
 
 int main(void)
 {
+  setlocale(LC_ALL, "");
   initscr();
   noecho();
   curs_set(0);
@@ -40,7 +42,7 @@ int main(void)
   tm_today.tm_sec    = 0;
 
   view_args->date   = mktime(&tm_today);
-  view_args->e_list = test();
+  view_args->e_list = initCalendarTemplate();
   // Skips to next available day (useful is launched on a weekend)
   DAY_DECR(view_args->date);
   DAY_INCR(view_args->date);

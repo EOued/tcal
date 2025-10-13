@@ -14,7 +14,6 @@ void freeEventList(event_list* l)
 event initCalendar(char* dtstart, char* dtend, char* summary, char* description,
                    char* location)
 {
-  printf("INIT CALENDAR\n");
   int n1  = strlen(summary) + 1;
   int n2  = strlen(description) + 1;
   int n3  = strlen(location) + 1;
@@ -25,7 +24,6 @@ event initCalendar(char* dtstart, char* dtend, char* summary, char* description,
   strncpy(c.summary, summary, n1);
   strncpy(c.description, description, n2);
   strncpy(c.location, location, n3);
-  printf("UWU %s\n", dtstart);
   c.start = parseiso8601utc(dtstart);
   c.end   = parseiso8601utc(dtend);
 

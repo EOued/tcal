@@ -4,9 +4,8 @@ CFILES = \
 	drawer/pages.c\
 	drawer/drawer.c\
 	parser/iso8601.c\
-	parser/calendar_parser.c\
-	parser/ics.c\
 	calendar/calendar.c\
+	calendar/calendar_example.c\
 	views_handling/views_handling.c\
 	views_handling/views_funcs.c\
 	functions/functions.c\
@@ -25,7 +24,7 @@ EXECNAME = tcal
 EXEC = $(EXECDIR)/$(EXECNAME)
 GXX = gcc
 
-FLAGS=-g -Wall -Wextra -Wvla -pedantic -fsanitize=address,undefined -pthread -lncurses
+FLAGS=-g -Wall -Wextra -Wvla -pedantic -fsanitize=address,undefined -pthread -lncurses -lncursesw
 POSTFLAGS=-lm
 
 debug=0
