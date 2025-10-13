@@ -45,15 +45,14 @@ void printCal(event c)
   printf("dtend: %s\n", buffer);
 }
 
-int date_index(time_t t1)
-{
-  struct tm tm1 = *localtime(&t1);
-  return 372 * tm1.tm_year + 31 * tm1.tm_mon + tm1.tm_mday;
-}
-
 int compare_cal(const void* c1, const void* c2)
 {
-  return date_index(((event*)c1)->start - ((event*)c2)->start);
+  time_t t1 = *(const time_t*)c1;
+  time_t t2 = *(const time_t*)c2;
+
+  if (t1 < t2) return -1;
+  if (t1 > t2) return 1;
+  return 0;
 }
 int is_same_day(time_t t1, time_t t2)
 {

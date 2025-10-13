@@ -22,8 +22,6 @@ void day_grid(void* varg)
   mvprintw(0, COLS / 2, "%s, %d %s %d", tday[_week_day], day,
            month_display[month], year);
   draw_box(0, 1, COLS - 1, LINES - 2);
-  mvprintw(3, 3, "%d", _args->e_list->size);
-
   qsort(_args->e_list->e, _args->e_list->size, sizeof(event), compare_cal);
   // Iterate until date have been skipped
   int passed_date = 0;
@@ -32,16 +30,6 @@ void day_grid(void* varg)
   while (index < _args->e_list->size)
   {
     event c = _args->e_list->e[index];
-    char buffer[64];
-    struct tm* tm_info = localtime(&c.start);
-    strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", tm_info);
-    mvprintw(8, 3, "eée");
-    mvprintw(4, 3, "%s", buffer);
-    tm_info = localtime(&args);
-    strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", tm_info);
-    mvprintw(5, 3, "%s", buffer);
-    mvprintw(6, 3, "%s", c.summary);
-
     if (!is_same_day(args, c.start))
     {
       index++;
@@ -49,8 +37,16 @@ void day_grid(void* varg)
       continue;
     }
     if (!passed_date) passed_date = 1;
-    mvprintw(y, 4, "%s | %s | %s", c.summary, c.description, c.location);
-    y++;
+    // Printing
+    char buff1[6];
+    char buff2[6];
+    strftime(buff1, sizeof(buff1), "%H:%M", localtime(&c.start));
+    strftime(buff2, sizeof(buff2), "%H:%M", localtime(&c.end));
+    HLINE_BOXSPLIT(0, COLS - 1, y);
+    mvprintw(y, 3, " %s-%s ", buff1, buff2);
+    mvprintw(y + 1, 3, " \t%s - %s", c.summary, c.location);
+    HLINE_BOXSPLIT(0, COLS - 1, y + 3);
+    y += 3;
     index++;
   }
 }

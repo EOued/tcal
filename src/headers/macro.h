@@ -113,7 +113,6 @@
 
 #define DAY_INCR(args)                                                         \
   do {                                                                         \
-    printf("INCR\n");                                                          \
     struct tm tm_next = *localtime(&args);                                     \
     tm_next.tm_mday++;                                                         \
     args = timegm(&tm_next);                                                   \
@@ -121,7 +120,6 @@
 
 #define DAY_DECR(args)                                                         \
   do {                                                                         \
-    printf("DECR\n");                                                          \
     struct tm tm_next = *localtime(&args);                                     \
     tm_next.tm_mday--;                                                         \
     args = timegm(&tm_next);                                                   \

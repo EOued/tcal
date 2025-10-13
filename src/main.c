@@ -53,7 +53,6 @@ int main(void)
   char buffer[100];
   strftime(buffer, sizeof(buffer), "%A %d %B %Y, %H:%M:%S", &tm_today);
 
-  printf("Formatted date: %s\n", buffer);
   DAY_DECR(view_args->date);
   DAY_INCR(view_args->date);
   int view_uuid = renderableAdd(r, day_grid, view_args);
