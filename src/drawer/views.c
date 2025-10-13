@@ -42,6 +42,7 @@ void day_grid(void* varg)
   int passed_date = 0;
   uint index      = 0;
   uint y          = 3;
+  uint drawed_bar = 0;
   while (index < _args->e_list->size)
   {
     event c = _args->e_list->e[index];
@@ -53,9 +54,24 @@ void day_grid(void* varg)
     }
     if (!passed_date) passed_date = 1;
     init_pair(1, COLOR_GREEN, COLOR_BLACK);
-    if (in_interval(now, c.start, c.end)) attron(COLOR_PAIR(1));
-    // Printing
+    if (in_interval(now, c.start, c.end))
+    {
+      drawed_bar = 1;
+      attron(COLOR_PAIR(1));
+    }
+    // We draw a bar at the current time
     char buff1[6];
+    if (!drawed_bar && c.start > now && !in_interval(now, c.start, c.end))
+    {
+      drawed_bar = 1;
+      attron(COLOR_PAIR(1));
+      HLINE_BOXSPLIT(0, COLS - 1, y);
+      strftime(buff1, sizeof(buff1), "%H:%M", localtime(&now));
+      mvprintw(y, 3, " %s ", buff1);
+      y++;
+      attroff(COLOR_PAIR(1));
+    }
+    // Printing
     char buff2[6];
     strftime(buff1, sizeof(buff1), "%H:%M", localtime(&c.start));
     strftime(buff2, sizeof(buff2), "%H:%M", localtime(&c.end));
@@ -66,6 +82,17 @@ void day_grid(void* varg)
     attroff(COLOR_PAIR(1));
     y += 3;
     index++;
+  }
+  y++;
+  char buff[6];
+  if (!drawed_bar)
+  {
+    attron(COLOR_PAIR(1));
+    HLINE_BOXSPLIT(0, COLS - 1, y);
+    strftime(buff, sizeof(buff), "%H:%M", localtime(&now));
+    mvprintw(y, 3, " %s ", buff);
+    y++;
+    attroff(COLOR_PAIR(1));
   }
 }
 
