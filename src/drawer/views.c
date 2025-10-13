@@ -7,10 +7,25 @@
 #include <string.h>
 #include <time.h>
 
+#define DATE_INDEX(time) 372 * time->tm_year + 31 * time->tm_mon + time->tm_mday
+
+static inline int in_interval(time_t time, time_t low, time_t high)
+{
+  return low <= time && time <= high;
+}
+
+static inline int dw_in_interval(time_t time, time_t low, time_t high)
+{
+  int time_i = DATE_INDEX(localtime(&time));
+  return DATE_INDEX(localtime(&low)) <= time_i &&
+         time_i <= DATE_INDEX(localtime(&high));
+}
+
 void day_grid(void* varg)
 {
   view_arguments* _args   = (view_arguments*)varg;
   time_t args             = _args->date;
+  time_t now              = time(NULL);
   int day                 = localtime(&args)->tm_mday;
   int month               = localtime(&args)->tm_mon;
   int year                = localtime(&args)->tm_year + 1900;
@@ -30,13 +45,15 @@ void day_grid(void* varg)
   while (index < _args->e_list->size)
   {
     event c = _args->e_list->e[index];
-    if (!is_same_day(args, c.start))
+    if (!dw_in_interval(args, c.start, c.end))
     {
       index++;
       if (passed_date) break;
       continue;
     }
     if (!passed_date) passed_date = 1;
+    init_pair(1, COLOR_GREEN, COLOR_BLACK);
+    if (in_interval(now, c.start, c.end)) attron(COLOR_PAIR(1));
     // Printing
     char buff1[6];
     char buff2[6];
@@ -46,6 +63,7 @@ void day_grid(void* varg)
     mvprintw(y, 3, " %s-%s ", buff1, buff2);
     mvprintw(y + 1, 3, " \t%s - %s", c.summary, c.location);
     HLINE_BOXSPLIT(0, COLS - 1, y + 3);
+    attroff(COLOR_PAIR(1));
     y += 3;
     index++;
   }

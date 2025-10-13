@@ -54,6 +54,7 @@ int compare_cal(const void* c1, const void* c2)
   if (t1 > t2) return 1;
   return 0;
 }
+
 int is_same_day(time_t t1, time_t t2)
 {
   struct tm tm1 = *localtime(&t1);

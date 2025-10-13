@@ -29,4 +29,5 @@ void freeCalendar(event c);
 int is_same_day(time_t t1, time_t t2);
 int compare_cal(const void* c1, const void* c2);
 event_list* initCalendarTemplate(void);
+
 #endif
