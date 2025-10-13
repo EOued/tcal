@@ -12,5 +12,5 @@ time_t parseiso8601utc(const char* date)
   tt.tm_mon -= 1;
   tt.tm_year -= 1900;
   tt.tm_isdst = -1;
-  return mktime(&tt);
+  return timegm(&tt);
 }

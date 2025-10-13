@@ -37,21 +37,30 @@ int main(void)
 
   time_t now         = time(NULL);
   struct tm tm_today = *localtime(&now);
-  tm_today.tm_hour   = 0;
-  tm_today.tm_min    = 0;
-  tm_today.tm_sec    = 0;
+  // override for testing purposes
+  // dec
+  tm_today.tm_mon = 11;
+  // eighth
+  tm_today.tm_mday = 5;
+  tm_today.tm_hour = 0;
+  tm_today.tm_min  = 0;
+  tm_today.tm_sec  = 0;
 
-  view_args->date   = mktime(&tm_today);
+  view_args->date   = timegm(&tm_today);
   view_args->e_list = initCalendarTemplate();
-  // Skips to next available day (useful is launched on a weekend)
+  // Skips to next available day (useful if launched on a weekend)
+
+  char buffer[100];
+  strftime(buffer, sizeof(buffer), "%A %d %B %Y, %H:%M:%S", &tm_today);
+
+  printf("Formatted date: %s\n", buffer);
   DAY_DECR(view_args->date);
   DAY_INCR(view_args->date);
-
   int view_uuid = renderableAdd(r, day_grid, view_args);
 
   uint help_page = 0;
+  views* v       = viewsInit();
 
-  views* v            = viewsInit();
   enum views view     = day;
   enum views old_view = none;
   for (enum views _v = help; _v <= month; _v++) createView(v, _v);

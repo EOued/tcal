@@ -100,7 +100,7 @@
     struct tm tm_next = *localtime(&args);                                     \
     tm_next.tm_mday   = 1;                                                     \
     tm_next.tm_mon++;                                                          \
-    args = mktime(&tm_next);                                                   \
+    args = timegm(&tm_next);                                                   \
   } while (0)
 
 #define MONTH_DECR(args)                                                       \
@@ -108,35 +108,37 @@
     struct tm tm_next = *localtime(&args);                                     \
     tm_next.tm_mday   = 1;                                                     \
     tm_next.tm_mon--;                                                          \
-    args = mktime(&tm_next);                                                   \
+    args = timegm(&tm_next);                                                   \
   } while (0)
 
 #define DAY_INCR(args)                                                         \
   do {                                                                         \
+    printf("INCR\n");                                                          \
     struct tm tm_next = *localtime(&args);                                     \
     tm_next.tm_mday++;                                                         \
-    args = mktime(&tm_next);                                                   \
+    args = timegm(&tm_next);                                                   \
   } while (TIME_ZELLER(args) > fri)
 
 #define DAY_DECR(args)                                                         \
   do {                                                                         \
+    printf("DECR\n");                                                          \
     struct tm tm_next = *localtime(&args);                                     \
     tm_next.tm_mday--;                                                         \
-    args = mktime(&tm_next);                                                   \
+    args = timegm(&tm_next);                                                   \
   } while (TIME_ZELLER(args) > fri)
 
 #define WEEK_INCR(args)                                                        \
   do {                                                                         \
     struct tm tm_next = *localtime(&args);                                     \
     tm_next.tm_mday += 7;                                                      \
-    args = mktime(&tm_next);                                                   \
+    args = timegm(&tm_next);                                                   \
   } while (0)
 
 #define WEEK_DECR(args)                                                        \
   do {                                                                         \
     struct tm tm_next = *localtime(&args);                                     \
     tm_next.tm_mday -= 7;                                                      \
-    args = mktime(&tm_next);                                                   \
+    args = timegm(&tm_next);                                                   \
   } while (0)
 
 #define VIEW_CHECKS(varg)                                                      \
