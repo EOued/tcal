@@ -139,5 +139,19 @@
     args = timegm(&tm_next);                                                   \
   } while (0)
 
+#define TIME_BAR(time_l, time_s, x1, x2, y)                                    \
+  do {                                                                         \
+    char buff1[6];                                                             \
+    HLINE_BOXSPLIT(x1, x2, y);                                                 \
+    uint shift = 0;                                                            \
+    for (int i = 0; i < time_s; i++)                                           \
+    {                                                                          \
+      strftime(buff1, sizeof(buff1), "%H:%M", localtime(time_l[i]));           \
+      mvprintw(y, x1 + 3 + shift, " %s ", buff1);                              \
+      if (i != time_s - 1) mvprintw(y, x1 + 10 + shift, "-");                  \
+      shift += 8;                                                              \
+    }                                                                          \
+  } while (0)
+
 #define uint unsigned int
 #endif

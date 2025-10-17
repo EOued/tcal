@@ -23,9 +23,11 @@ static inline int dw_in_interval(time_t time, time_t low, time_t high)
 
 void day_grid(void* varg)
 {
-  view_arguments* _args   = (view_arguments*)varg;
-  time_t args             = _args->date;
-  time_t now              = time(NULL);
+  view_arguments* _args = (view_arguments*)varg;
+  time_t args           = _args->date;
+  time_t now;
+  time(&now);
+  struct tm lt_now        = *localtime(&now);
   int day                 = localtime(&args)->tm_mday;
   int month               = localtime(&args)->tm_mon;
   int year                = localtime(&args)->tm_year + 1900;
@@ -39,12 +41,15 @@ void day_grid(void* varg)
   draw_box(0, 1, COLS - 1, LINES - 2);
   qsort(_args->e_list->e, _args->e_list->size, sizeof(event), compare_cal);
   // Iterate until date have been skipped
-  int passed_date = 0;
-  uint index      = 0;
-  uint y          = 3;
-  uint drawed_bar = 0;
+  int passed_date      = 0;
+  uint index           = 0;
+  uint y               = 3;
+  uint drawed_bar      = 0;
+  uint should_draw_bar = 0;
   while (index < _args->e_list->size)
   {
+    should_draw_bar = (day == lt_now.tm_mday) && (month == lt_now.tm_mon) &&
+                      (year == lt_now.tm_year + 1900);
     event c = _args->e_list->e[index];
     if (!dw_in_interval(args, c.start, c.end))
     {
@@ -60,37 +65,35 @@ void day_grid(void* varg)
       attron(COLOR_PAIR(1));
     }
     // We draw a bar at the current time
-    char buff1[6];
+    if (!should_draw_bar) goto event_print;
     if (!drawed_bar && c.start > now && !in_interval(now, c.start, c.end))
     {
-      drawed_bar = 1;
+      time_t* times[1] = {&now};
+      drawed_bar       = 1;
       attron(COLOR_PAIR(1));
-      HLINE_BOXSPLIT(0, COLS - 1, y);
-      strftime(buff1, sizeof(buff1), "%H:%M", localtime(&now));
-      mvprintw(y, 3, " %s ", buff1);
-      y++;
+      TIME_BAR(times, 1, 0, COLS - 1, y);
       attroff(COLOR_PAIR(1));
+      y++;
     }
     // Printing
-    char buff2[6];
-    strftime(buff1, sizeof(buff1), "%H:%M", localtime(&c.start));
-    strftime(buff2, sizeof(buff2), "%H:%M", localtime(&c.end));
-    HLINE_BOXSPLIT(0, COLS - 1, y);
-    mvprintw(y, 3, " %s-%s ", buff1, buff2);
-    mvprintw(y + 1, 3, " \t%s - %s", c.summary, c.location);
+  event_print:
+  {
+    time_t* times[2] = {&c.start, &c.end};
+    draw_box(0, y, COLS - 1, y + 3);
+    TIME_BAR(times, 2, 0, COLS - 1, y);
     HLINE_BOXSPLIT(0, COLS - 1, y + 3);
+    mvprintw(y + 1, 3, " \t%s - %s", c.summary, c.location);
     attroff(COLOR_PAIR(1));
     y += 3;
     index++;
   }
+  }
   y++;
-  char buff[6];
-  if (!drawed_bar)
+  if (should_draw_bar && !drawed_bar)
   {
+    time_t* times[1] = {&now};
     attron(COLOR_PAIR(1));
-    HLINE_BOXSPLIT(0, COLS - 1, y);
-    strftime(buff, sizeof(buff), "%H:%M", localtime(&now));
-    mvprintw(y, 3, " %s ", buff);
+    TIME_BAR(times, 1, 0, COLS - 1, y);
     y++;
     attroff(COLOR_PAIR(1));
   }
