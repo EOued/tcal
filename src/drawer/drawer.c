@@ -6,6 +6,16 @@
 
 #define HELP_LENGTH 8
 
+void draw_event(void* varg)
+{
+  (void)varg;
+  char** text = calloc(1, sizeof(char*));
+  int page    = draw_page(COLS / 3, LINES / 3, 2 * COLS / 3, LINES / 3 + 3, "",
+                          text, 1, 0);
+  free(text);
+  (void)page;
+}
+
 void _help_box(void* varg)
 {
   int* ptrpages            = (int*)varg;

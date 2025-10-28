@@ -1,4 +1,5 @@
 #include "drawer.h"
+#include "list.h"
 #include "macro.h"
 #include "views_handling.h"
 #include <ncurses.h>
@@ -27,9 +28,26 @@ int helpViewPreviousAction(ARGS** args)
 int helpViewOpen(ARGS** args)
 {
   if (!args) return 1;
-  *(*args)->uuid     = renderableAdd((*args)->r, _help_box, (*args)->args);
-  *(*args)->old_view = *(*args)->view;
-  *(*args)->view     = help;
+  *(*args)->uuid = renderableAdd((*args)->r, _help_box, (*args)->args);
+  enum views v   = help;
+  insertElement((*args)->view, &v);
+  return 0;
+}
+
+int drawEventsOpen(ARGS** args)
+{
+  if (!args) return 1;
+  *(*args)->uuid = renderableAdd((*args)->r, draw_event, (*args)->args);
+  enum views v   = event_view;
+  insertElement((*args)->view, &v);
+  return 0;
+}
+
+int drawEventsQuit(ARGS** args)
+{
+  if (!args) return 1;
+  renderableRemove((*args)->r, *(*args)->uuid);
+  pop((*args)->view);
   return 0;
 }
 
@@ -37,16 +55,15 @@ int helpViewQuit(ARGS** args)
 {
   if (!args) return 1;
   renderableRemove((*args)->r, *(*args)->uuid);
-  *(*args)->view     = *(*args)->old_view;
-  *(*args)->old_view = help;
+  pop((*args)->view);
   return 0;
 }
 
 int dayView(ARGS** args)
 {
   if (!args) return 1;
-  *(*args)->old_view = *(*args)->view;
-  *(*args)->view     = day;
+  enum views v = day;
+  insertElement((*args)->view, &v);
   UPDATE_VIEW((*args)->r, *(*args)->uuid, day_grid, (*args)->args);
   return 0;
 }
@@ -54,8 +71,8 @@ int dayView(ARGS** args)
 int weekView(ARGS** args)
 {
   if (!args) return 1;
-  *(*args)->old_view = *(*args)->view;
-  *(*args)->view     = week;
+  enum views v = week;
+  insertElement((*args)->view, &v);
   UPDATE_VIEW((*args)->r, *(*args)->uuid, week_grid, (*args)->args);
   return 0;
 }
@@ -63,8 +80,8 @@ int weekView(ARGS** args)
 int monthView(ARGS** args)
 {
   if (!args) return 1;
-  *(*args)->old_view = *(*args)->view;
-  *(*args)->view     = month;
+  enum views v = month;
+  insertElement((*args)->view, &v);
   UPDATE_VIEW((*args)->r, *(*args)->uuid, month_grid, (*args)->args);
   return 0;
 }

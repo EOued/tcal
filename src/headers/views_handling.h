@@ -2,6 +2,7 @@
 #define VIEWS_HANDLING
 
 #include "functions.h"
+#include "list.h"
 #include "macro.h"
 #include "renderer.h"
 
@@ -11,13 +12,13 @@ enum views
   help,
   day,
   week,
-  month
+  month,
+  event_view
 };
 
 typedef struct
 {
-  enum views* view;
-  enum views* old_view;
+  list* view;
   renderable* r;
   int* uuid;
   void* args;
@@ -47,6 +48,8 @@ int helpViewNextAction(ARGS** args);
 int helpViewPreviousAction(ARGS** args);
 int helpViewOpen(ARGS** args);
 int helpViewQuit(ARGS** args);
+int drawEventsOpen(ARGS** args);
+int drawEventsQuit(ARGS** args);
 int dayView(ARGS** args);
 int weekView(ARGS** args);
 int monthView(ARGS** args);

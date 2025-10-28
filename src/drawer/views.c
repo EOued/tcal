@@ -23,14 +23,14 @@ static inline int dw_in_interval(time_t time, time_t low, time_t high)
 
 void day_grid(void* varg)
 {
-  view_arguments* _args = (view_arguments*)varg;
-  time_t args           = _args->date;
+  view_arguments* args = (view_arguments*)varg;
+  time_t date          = args->date;
   time_t now;
   time(&now);
   struct tm lt_now        = *localtime(&now);
-  int day                 = localtime(&args)->tm_mday;
-  int month               = localtime(&args)->tm_mon;
-  int year                = localtime(&args)->tm_year + 1900;
+  int day                 = localtime(&date)->tm_mday;
+  int month               = localtime(&date)->tm_mon;
+  int year                = localtime(&date)->tm_year + 1900;
   char* tday[7]           = {" Monday", " Tuesday",  " Wednesday", " Thursday",
                              " Friday", " Saturday", " Sunday"};
   char* month_display[12] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun",
@@ -39,19 +39,19 @@ void day_grid(void* varg)
   mvprintw(0, COLS / 2, "%s, %d %s %d", tday[_week_day], day,
            month_display[month], year);
   draw_box(0, 1, COLS - 1, LINES - 2);
-  qsort(_args->e_list->e, _args->e_list->size, sizeof(event), compare_cal);
+  qsort(args->e_list->e, args->e_list->size, sizeof(event), compare_cal);
   // Iterate until date have been skipped
   int passed_date      = 0;
   uint index           = 0;
   uint y               = 3;
   uint drawed_bar      = 0;
   uint should_draw_bar = 0;
-  while (index < _args->e_list->size)
+  while (index < args->e_list->size)
   {
     should_draw_bar = (day == lt_now.tm_mday) && (month == lt_now.tm_mon) &&
                       (year == lt_now.tm_year + 1900);
-    event c = _args->e_list->e[index];
-    if (!dw_in_interval(args, c.start, c.end))
+    event c = args->e_list->e[index];
+    if (!dw_in_interval(date, c.start, c.end))
     {
       index++;
       if (passed_date) break;

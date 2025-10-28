@@ -8,6 +8,7 @@ CFILES = \
 	calendar/calendar_example.c\
 	views_handling/views_handling.c\
 	views_handling/views_funcs.c\
+	utils/list.c\
 	functions/functions.c\
 	functions/hashmap.c\
 	main.c\
@@ -17,7 +18,7 @@ SOURCES = $(foreach file, $(CFILES), $(SRCDIR)/$(file))
 OBJDIR = build/obj
 INCLUDE = -I$(SRCDIR)/headers
 OFILES = $(CFILES:.c=.o)
-SUBDIRS = drawer functions views_handling parser calendar
+SUBDIRS = drawer functions views_handling parser calendar utils
 TARGETS = $(foreach file, $(OFILES), $(OBJDIR)/$(file))
 EXECDIR = build/target
 EXECNAME = tcal

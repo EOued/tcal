@@ -7,18 +7,21 @@
 #include <stdlib.h>
 
 #define ERRMSG(msg)                                                            \
-  do {                                                                         \
+  do                                                                           \
+  {                                                                            \
     fprintf(stderr, #msg);                                                     \
     exit(1);                                                                   \
   } while (0)
 
 #define ERRCHK(op)                                                             \
-  do {                                                                         \
+  do                                                                           \
+  {                                                                            \
     if ((op) == -1) ERRMSG(op);                                                \
   } while (0)
 
 #define MEMCHK(op)                                                             \
-  do {                                                                         \
+  do                                                                           \
+  {                                                                            \
     if ((op) == NULL) ERRMSG(op);                                              \
   } while (0)
 
@@ -30,7 +33,8 @@
   if (ptr) free(ptr)
 
 #define REALLOC(size, capacity, size_t, ptr)                                   \
-  do {                                                                         \
+  do                                                                           \
+  {                                                                            \
     if (capacity <= size)                                                      \
     {                                                                          \
       if (!capacity) capacity = 2;                                             \
@@ -41,7 +45,8 @@
   } while (0)
 
 #define RENDER(renderable)                                                     \
-  do {                                                                         \
+  do                                                                           \
+  {                                                                            \
     erase();                                                                   \
     render(renderable);                                                        \
     refresh();                                                                 \
@@ -50,7 +55,8 @@
 #define MIN(a, b) (a < b ? a : b)
 
 #define HLINE_BOXSPLIT(x1, x2, y)                                              \
-  do {                                                                         \
+  do                                                                           \
+  {                                                                            \
     mvaddch(y, x1, ACS_LTEE);                                                  \
     for (int x = x1 + 1; x < x2; x++) mvaddch(y, x, ACS_HLINE);                \
     mvaddch(y, x2, ACS_RTEE);                                                  \
@@ -66,7 +72,8 @@
   break;
 
 #define UPDATE_VIEW(renderable, view_uuid, view_func, view_args)               \
-  do {                                                                         \
+  do                                                                           \
+  {                                                                            \
     renderableRemove(renderable, view_uuid);                                   \
     view_uuid = renderableAdd(renderable, view_func, view_args);               \
   } while (0)
@@ -96,7 +103,8 @@
              localtime(&time)->tm_year + 1900)
 
 #define MONTH_INCR(args)                                                       \
-  do {                                                                         \
+  do                                                                           \
+  {                                                                            \
     struct tm tm_next = *localtime(&args);                                     \
     tm_next.tm_mday   = 1;                                                     \
     tm_next.tm_mon++;                                                          \
@@ -104,7 +112,8 @@
   } while (0)
 
 #define MONTH_DECR(args)                                                       \
-  do {                                                                         \
+  do                                                                           \
+  {                                                                            \
     struct tm tm_next = *localtime(&args);                                     \
     tm_next.tm_mday   = 1;                                                     \
     tm_next.tm_mon--;                                                          \
@@ -112,35 +121,40 @@
   } while (0)
 
 #define DAY_INCR(args)                                                         \
-  do {                                                                         \
+  do                                                                           \
+  {                                                                            \
     struct tm tm_next = *localtime(&args);                                     \
     tm_next.tm_mday++;                                                         \
     args = timegm(&tm_next);                                                   \
   } while (TIME_ZELLER(args) > fri)
 
 #define DAY_DECR(args)                                                         \
-  do {                                                                         \
+  do                                                                           \
+  {                                                                            \
     struct tm tm_next = *localtime(&args);                                     \
     tm_next.tm_mday--;                                                         \
     args = timegm(&tm_next);                                                   \
   } while (TIME_ZELLER(args) > fri)
 
 #define WEEK_INCR(args)                                                        \
-  do {                                                                         \
+  do                                                                           \
+  {                                                                            \
     struct tm tm_next = *localtime(&args);                                     \
     tm_next.tm_mday += 7;                                                      \
     args = timegm(&tm_next);                                                   \
   } while (0)
 
 #define WEEK_DECR(args)                                                        \
-  do {                                                                         \
+  do                                                                           \
+  {                                                                            \
     struct tm tm_next = *localtime(&args);                                     \
     tm_next.tm_mday -= 7;                                                      \
     args = timegm(&tm_next);                                                   \
   } while (0)
 
 #define TIME_BAR(time_l, time_s, x1, x2, y)                                    \
-  do {                                                                         \
+  do                                                                           \
+  {                                                                            \
     char buff1[6];                                                             \
     HLINE_BOXSPLIT(x1, x2, y);                                                 \
     uint shift = 0;                                                            \
@@ -154,4 +168,7 @@
   } while (0)
 
 #define uint unsigned int
+
+#define RZBL_L_ELEM(l, pos) ((char*)l->elements + ((pos) * l->esize))
+
 #endif

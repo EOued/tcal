@@ -1,6 +1,7 @@
 #include "calendar.h"
 #include "drawer.h"
 #include "functions.h"
+#include "list.h"
 #include "macro.h"
 #include "renderer.h"
 #include "views_handling.h"
@@ -21,6 +22,12 @@ void quit_text(void* _)
   move(0, 0);
 }
 
+static void void_free(void* _)
+{
+  (void)_;
+  return;
+}
+
 int main(void)
 {
   setlocale(LC_ALL, "");
@@ -32,7 +39,7 @@ int main(void)
   int box_uuid  = -1;
   renderableAdd(r, quit_text, NULL);
 
-  MEMCREATE(int*, box_args, malloc(4 * sizeof(int)));
+  MEMCREATE(int*, box_args, malloc(5 * sizeof(int)));
   MEMCREATE(view_arguments*, view_args, calloc(1, sizeof(view_arguments)));
 
   time_t now         = time(NULL);
@@ -60,23 +67,22 @@ int main(void)
   uint help_page = 0;
   views* v       = viewsInit();
 
-  enum views view     = day;
-  enum views old_view = none;
-  for (enum views _v = help; _v <= month; _v++) createView(v, _v);
+  list* views_stack = initList(sizeof(enum views));
+  enum views view   = day;
+  insertElement(views_stack, &view);
+  for (enum views _v = help; _v <= event_view; _v++) createView(v, _v);
 
   MEMCREATE(ARGS*, helpActionArg, calloc(1, sizeof(ARGS)));
-  helpActionArg->view     = &view;
-  helpActionArg->old_view = &old_view;
-  helpActionArg->r        = r;
-  helpActionArg->uuid     = &box_uuid;
-  helpActionArg->args     = &help_page;
+  helpActionArg->view = views_stack;
+  helpActionArg->r    = r;
+  helpActionArg->uuid = &box_uuid;
+  helpActionArg->args = &help_page;
 
   MEMCREATE(ARGS*, dateActionArg, calloc(1, sizeof(ARGS)));
-  dateActionArg->view     = &view;
-  dateActionArg->old_view = &old_view;
-  dateActionArg->r        = r;
-  dateActionArg->uuid     = &view_uuid;
-  dateActionArg->args     = view_args;
+  dateActionArg->view = views_stack;
+  dateActionArg->r    = r;
+  dateActionArg->uuid = &view_uuid;
+  dateActionArg->args = view_args;
 
   // top-level
   viewsAddAction(v, -1, 'd', dayView, &dateActionArg);
@@ -91,8 +97,12 @@ int main(void)
   viewsAddAction(v, help, 'p', helpViewPreviousAction, &helpActionArg);
   viewsAddAction(v, help, 'n', helpViewNextAction, &helpActionArg);
 
+  viewsAddAction(v, event_view, 'e', drawEventsQuit, &dateActionArg);
+  viewsAddAction(v, event_view, 'q', drawEventsQuit, &dateActionArg);
+
   viewsAddAction(v, day, 'n', dayNext, &dateActionArg);
   viewsAddAction(v, day, 'p', dayPrevious, &dateActionArg);
+  viewsAddAction(v, day, 'e', drawEventsOpen, &dateActionArg);
 
   viewsAddAction(v, week, 'k', dayNext, &dateActionArg);
   viewsAddAction(v, week, 'l', dayNext, &dateActionArg);
@@ -121,7 +131,8 @@ int main(void)
       // -1: Action not found in current level/toplevel
       // 0: Action found, executed successfully
       // 1: Action found, close window
-      int arg = viewsExecuteAction(v, view, ch);
+      int arg = viewsExecuteAction(
+          v, *(enum views*)RZBL_L_ELEM(views_stack, views_stack->size - 1), ch);
       if (arg > 0) goto leave;
       RENDER_BREAK(to_render);
     }
@@ -136,6 +147,7 @@ leave:
   quit(NULL);
   freeRenderable(r);
   viewsFree(v);
+  freeList(views_stack, void_free);
   free(box_args);
   freeEventList(view_args->e_list);
   free(view_args);
