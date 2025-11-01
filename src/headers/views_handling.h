@@ -71,7 +71,7 @@ void viewsAddAction(views* views, int uuid, char character,
                     int (*action)(ARGS**), ARGS** args);
 int viewsExecuteAction(views* views, int uuid, char character);
 
-elist* presetActionList(views* v, ARGS* dateActionArg, ARGS* helpActionArg);
+elist* presetActionList(views* v, ARGS** dateActionArg, ARGS** helpActionArg);
 void freeActionList(elist* elist);
 
 // views_funcs

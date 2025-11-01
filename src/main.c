@@ -85,7 +85,7 @@ int main(void)
   dateActionArg->uuid = &view_uuid;
   dateActionArg->args = view_args;
 
-  elist* elist     = presetActionList(v, dateActionArg, helpActionArg);
+  elist* elist     = presetActionList(v, &dateActionArg, &helpActionArg);
   help_args->elist = elist;
   RENDER(r);
   int to_render = 0;
@@ -106,9 +106,10 @@ int main(void)
       // Display help
       if (arg == -1 && ch == '?')
       {
-        ((help_arguments*)helpActionArg->args)->valid_view =
+        help_arguments* arguments = helpActionArg->args;
+        arguments->valid_view =
             *RZBL_L_ELEM(helpActionArg->view, helpActionArg->view->size - 1);
-        *helpActionArg->uuid =
+        *(helpActionArg->uuid) =
             renderableAdd(helpActionArg->r, _help_box, helpActionArg->args);
         enum views v = help;
         insertElement(helpActionArg->view, &v);
@@ -132,7 +133,7 @@ leave:
   free(box_args);
   freeEventList(view_args->e_list);
   free(view_args);
-  free(helpActionArg);
+  free(help_args) free(helpActionArg);
   free(dateActionArg);
   return EXIT_SUCCESS;
 }
