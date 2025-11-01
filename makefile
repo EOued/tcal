@@ -8,6 +8,7 @@ CFILES = \
 	calendar/calendar_example.c\
 	views_handling/views_handling.c\
 	views_handling/views_funcs.c\
+	views_handling/views_adder.c\
 	utils/list.c\
 	functions/functions.c\
 	functions/hashmap.c\

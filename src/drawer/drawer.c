@@ -1,5 +1,6 @@
 #include "drawer.h"
 #include "macro.h"
+#include "views_handling.h"
 #include <math.h>
 #include <ncurses.h>
 #include <string.h>
@@ -16,32 +17,44 @@ void draw_event(void* varg)
   (void)page;
 }
 
-void _help_box(void* varg)
+char** extract_strings(const elist* elist, int* size, int valid_view)
 {
-  int* ptrpages            = (int*)varg;
-  char** text              = calloc(HELP_LENGTH, sizeof(char*));
-  char* _text[HELP_LENGTH] = {"?: Show help menu.",
-                              "n: Next page/day/week/month.",
-                              "p: Previous page/day/week/month.",
-                              "h/j/k/l: Vim keybinds for navigation.",
-                              "d: Toggle day view.",
-                              "w: Toggle week view.",
-                              "m: Toggle month view.",
-                              "t: Change date to today."};
-  uint len;
-  for (uint i = 0; i < HELP_LENGTH; i++)
-  {
-    len     = strlen(_text[i]);
-    text[i] = calloc(len + 1, sizeof(char));
-    strncpy(text[i], _text[i], len);
-  }
-  int page = draw_page(COLS / 3, LINES / 3, 2 * COLS / 3, 2 * LINES / 3,
-                       "HELP MENU", text, HELP_LENGTH, *ptrpages);
+  if (!elist || !elist->elements || elist->size == 0) return NULL;
+  MEMCREATE(char**, strings, calloc(elist->size, sizeof(char*)));
+  *size = elist->size;
+  (void)valid_view;
+  int n, index;
+  for (uint i = 0; i < elist->size; i++)
+    if (elist->elements[i].view == valid_view)
+    {
+      index = i - (elist->size - *size);
+      n     = strlen(elist->elements[index].description);
+      MEMCHK(strings[index] = calloc(n + 4, 1));
+      strings[index][0] = elist->elements[index].character;
+      strings[index][1] = ':';
+      strings[index][2] = ' ';
+      strncpy(strings[index] + 3, elist->elements[index].description, n);
+    }
+    else
+      (*size)--;
+
+  return strings;
+}
+
+void _help_box(void* args)
+{
+  help_arguments* help_args = (help_arguments*)args;
+  elist* elist              = help_args->elist;
+  int* ptrpages             = &help_args->help_page;
+  int size                  = 0;
+  char** str = extract_strings(elist, &size, help_args->valid_view);
+  int page   = draw_page(COLS / 3, LINES / 3, 2 * COLS / 3, 2 * LINES / 3,
+                         "HELP MENU", str, size, *ptrpages);
   // Displayed page is not entered argument: most likely an overflow, we set
   // back the page to the latest (provided by draw_page)
   if (page != -1 && page != *ptrpages) *ptrpages = page;
-  for (uint i = 0; i < HELP_LENGTH; i++) free(text[i]);
-  free(text);
+  for (int i = 0; i < size; i++) free(str[i]);
+  free(str);
 }
 
 void draw_box(uint x1, uint y1, uint x2, uint y2)

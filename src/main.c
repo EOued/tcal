@@ -41,6 +41,8 @@ int main(void)
 
   MEMCREATE(int*, box_args, malloc(5 * sizeof(int)));
   MEMCREATE(view_arguments*, view_args, calloc(1, sizeof(view_arguments)));
+  MEMCREATE(help_arguments*, help_args, calloc(1, sizeof(help_arguments)));
+  help_args->help_page = 0;
 
   time_t now         = time(NULL);
   struct tm tm_today = *localtime(&now);
@@ -64,8 +66,7 @@ int main(void)
   DAY_INCR(view_args->date);
   int view_uuid = renderableAdd(r, day_grid, view_args);
 
-  uint help_page = 0;
-  views* v       = viewsInit();
+  views* v = viewsInit();
 
   list* views_stack = initList(sizeof(enum views));
   enum views view   = day;
@@ -76,7 +77,7 @@ int main(void)
   helpActionArg->view = views_stack;
   helpActionArg->r    = r;
   helpActionArg->uuid = &box_uuid;
-  helpActionArg->args = &help_page;
+  helpActionArg->args = help_args;
 
   MEMCREATE(ARGS*, dateActionArg, calloc(1, sizeof(ARGS)));
   dateActionArg->view = views_stack;
@@ -84,39 +85,8 @@ int main(void)
   dateActionArg->uuid = &view_uuid;
   dateActionArg->args = view_args;
 
-  // top-level
-  viewsAddAction(v, -1, 'd', dayView, &dateActionArg);
-  viewsAddAction(v, -1, 'w', weekView, &dateActionArg);
-  viewsAddAction(v, -1, 'm', monthView, &dateActionArg);
-  viewsAddAction(v, -1, '?', helpViewOpen, &helpActionArg);
-  viewsAddAction(v, -1, 't', currentDate, &dateActionArg);
-  viewsAddAction(v, -1, 'q', quit, NULL);
-
-  viewsAddAction(v, help, '?', helpViewQuit, &helpActionArg);
-  viewsAddAction(v, help, 'q', helpViewQuit, &helpActionArg);
-  viewsAddAction(v, help, 'p', helpViewPreviousAction, &helpActionArg);
-  viewsAddAction(v, help, 'n', helpViewNextAction, &helpActionArg);
-
-  viewsAddAction(v, event_view, 'e', drawEventsQuit, &dateActionArg);
-  viewsAddAction(v, event_view, 'q', drawEventsQuit, &dateActionArg);
-
-  viewsAddAction(v, day, 'n', dayNext, &dateActionArg);
-  viewsAddAction(v, day, 'p', dayPrevious, &dateActionArg);
-  viewsAddAction(v, day, 'e', drawEventsOpen, &dateActionArg);
-
-  viewsAddAction(v, week, 'k', dayNext, &dateActionArg);
-  viewsAddAction(v, week, 'l', dayNext, &dateActionArg);
-  viewsAddAction(v, week, 'j', dayPrevious, &dateActionArg);
-  viewsAddAction(v, week, 'h', dayPrevious, &dateActionArg);
-  viewsAddAction(v, week, 'n', weekNext, &dateActionArg);
-  viewsAddAction(v, week, 'p', weekPrevious, &dateActionArg);
-
-  viewsAddAction(v, month, 'j', weekNext, &dateActionArg);
-  viewsAddAction(v, month, 'l', dayNext, &dateActionArg);
-  viewsAddAction(v, month, 'k', weekPrevious, &dateActionArg);
-  viewsAddAction(v, month, 'h', dayPrevious, &dateActionArg);
-  viewsAddAction(v, month, 'n', monthNext, &dateActionArg);
-  viewsAddAction(v, month, 'p', monthPrevious, &dateActionArg);
+  elist* elist     = presetActionList(v, dateActionArg, helpActionArg);
+  help_args->elist = elist;
   RENDER(r);
   int to_render = 0;
   while (1)
@@ -133,6 +103,16 @@ int main(void)
       // 1: Action found, close window
       int arg = viewsExecuteAction(
           v, *(enum views*)RZBL_L_ELEM(views_stack, views_stack->size - 1), ch);
+      // Display help
+      if (arg == -1 && ch == '?')
+      {
+        ((help_arguments*)helpActionArg->args)->valid_view =
+            *RZBL_L_ELEM(helpActionArg->view, helpActionArg->view->size - 1);
+        *helpActionArg->uuid =
+            renderableAdd(helpActionArg->r, _help_box, helpActionArg->args);
+        enum views v = help;
+        insertElement(helpActionArg->view, &v);
+      }
       if (arg > 0) goto leave;
       RENDER_BREAK(to_render);
     }
@@ -147,6 +127,7 @@ leave:
   quit(NULL);
   freeRenderable(r);
   viewsFree(v);
+  freeActionList(elist);
   freeList(views_stack, void_free);
   free(box_args);
   freeEventList(view_args->e_list);

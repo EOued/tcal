@@ -3,12 +3,20 @@
 
 #include "calendar.h"
 #include "macro.h"
+#include "views_handling.h"
 
 typedef struct
 {
   time_t date;
   event_list* e_list;
 } view_arguments;
+
+typedef struct
+{
+  int help_page;
+  elist* elist;
+  enum views valid_view;
+} help_arguments;
 
 void day_grid(void* _);
 void week_grid(void* _);

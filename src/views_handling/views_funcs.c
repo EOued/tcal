@@ -25,15 +25,6 @@ int helpViewPreviousAction(ARGS** args)
   return 0;
 }
 
-int helpViewOpen(ARGS** args)
-{
-  if (!args) return 1;
-  *(*args)->uuid = renderableAdd((*args)->r, _help_box, (*args)->args);
-  enum views v   = help;
-  insertElement((*args)->view, &v);
-  return 0;
-}
-
 int drawEventsOpen(ARGS** args)
 {
   if (!args) return 1;
