@@ -1,105 +1,85 @@
 #include "renderer.h"
+#include "list.h"
 #include "stdlib.h"
 
+// render_element
+
+static inline render_element* initRenderE(void (*rendering_func)(void*),
+                                          void* args)
+{
+  MEMCREATE(render_element*, elem, malloc(sizeof(render_element)));
+  elem->rendering_funcs = rendering_func;
+  elem->args            = args;
+  return elem;
+}
+
+void freeRenderE(void* e)
+{
+  FREE(e);
+  return;
+}
+
+static void voidFree(void* e)
+{
+  (void)e;
+  return;
+}
+
+// Traversal in reversing order is heavy but assuming there is never a lot of
+// things to be rendered, this should be fast enough.
 void render(renderable* renderable)
 {
   if (!renderable) return;
-  for (unsigned int i = 0; i < renderable->_size; i++)
-    if (renderable->rendering_funcs[i])
-      renderable->rendering_funcs[i](renderable->args[i]);
+  struct HASH_NODE* node = renderable->start;
+  render_element* elem;
+  list* l = initList(sizeof(void*));
+  while (node)
+  {
+    insertElement(l, &(node->element));
+    node = node->next;
+  }
+  for (int i = l->size - 1; i >= 0; i--)
+  {
+    elem = *((render_element**)RZBL_L_ELEM(l, i));
+    elem->rendering_funcs(elem->args);
+  }
+  freeList(l, voidFree);
   return;
 }
 
 renderable* initRenderable(void)
 {
-  renderable* r;
-  MEMCHK((r = malloc(sizeof(renderable))));
-  r->_capacity = 1;
-  r->_size     = 1;
-  MEMCHK(r->args = calloc(1, sizeof(void*)));
-  MEMCHK(r->rendering_funcs = calloc(1, sizeof(void (*)(void*))));
-  r->_emptyelements_capacity = 1;
-  r->_emptyelements_size     = 0;
-  MEMCHK(r->_emptyelements_indexes = calloc(1, sizeof(unsigned int)));
-  return r;
+  renderable* map = hashmapInit();
+  return map;
 }
 
-void updateArgument(renderable* renderable, unsigned int UUID, void* newarg)
-{
-  if (!renderable || !renderable->args) return;
-  renderable->args[UUID] = newarg;
-  return;
-}
-
-void emptyElementsAddIndex(renderable* renderable, unsigned int index)
-{
-  if (!renderable || !renderable->_emptyelements_indexes) return;
-  REALLOC(renderable->_emptyelements_size, renderable->_emptyelements_capacity,
-          sizeof(unsigned int), renderable->_emptyelements_indexes);
-  renderable->_emptyelements_indexes[renderable->_emptyelements_size++] = index;
-  return;
-}
-
-int emptyElementsPop(renderable* renderable)
-{
-  if (!renderable || !renderable->_emptyelements_indexes ||
-      renderable->_emptyelements_size == 0)
-    return -1;
-  return renderable->_emptyelements_indexes[--renderable->_emptyelements_size];
-}
-
-void freeRenderable(renderable* renderable)
+void updateArgument(renderable* renderable, int UUID, void* newarg)
 {
   if (!renderable) return;
-  FREE(renderable->args);
-  FREE(renderable->rendering_funcs);
-  FREE(renderable->_emptyelements_indexes);
-  FREE(renderable);
+  void* render_e = hashmapFind(renderable, (int)UUID);
+  if (!render_e) return;
+  ((render_element*)render_e)->args = newarg;
   return;
 }
 
 int renderableAdd(renderable* renderable, void (*rendering_func)(void*),
                   void* args)
 {
-  if (!renderable) return -1;
-  int emptyElement;
-  if ((emptyElement = emptyElementsPop(renderable)) != -1)
-  {
-    renderable->rendering_funcs[emptyElement] = rendering_func;
-    renderable->args[emptyElement]            = args;
-    if (renderable->_size <= (unsigned int)emptyElement)
-      renderable->_size = emptyElement + 1;
-    return emptyElement;
-  }
-  for (unsigned int index = 0; index < renderable->_size; index++)
-  {
-    // Hit empty function, we'll put our function here.
-    if (!renderable->rendering_funcs[index])
-    {
-      renderable->rendering_funcs[index] = rendering_func;
-      renderable->args[index]            = args;
-      return index;
-    }
-  }
-
-  // Hit end of iteration, list full. We reallocate memory
-  int index    = renderable->_size;
-  int size     = renderable->_size;
-  int capacity = renderable->_capacity;
-  REALLOC(renderable->_size++, renderable->_capacity, sizeof(void (*)(void*)),
-          renderable->rendering_funcs);
-  REALLOC(size, capacity, sizeof(void*), renderable->args);
-
-  renderable->rendering_funcs[index] = rendering_func;
-  renderable->args[index]            = args;
-  return index;
+  render_element* elem = initRenderE(rendering_func, args);
+  int uuid             = random();
+  hashmapInsert(renderable, uuid, elem);
+  return uuid;
 }
 
-void renderableRemove(renderable* renderable, unsigned int UUID)
+void renderableRemove(renderable* renderable, int UUID)
 {
-  if (!renderable || (unsigned int)renderable->_size <= UUID) return;
-  emptyElementsAddIndex(renderable, UUID);
-  renderable->rendering_funcs[UUID] = NULL;
-  renderable->_size--;
+  if (!renderable) return;
+  hashmapDelete(renderable, UUID, freeRenderE);
   return;
+}
+
+void freeRenderable(renderable* renderable)
+{
+  if (!renderable) return;
+  hashmapFree(renderable, freeRenderE);
 }

@@ -35,6 +35,7 @@ int main(void)
   noecho();
   curs_set(0);
   start_color();
+  srandom(time(NULL));
   renderable* r = initRenderable();
   int box_uuid  = -1;
   renderableAdd(r, quit_text, NULL);

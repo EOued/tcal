@@ -4,28 +4,24 @@
 #include "macro.h"
 #include "stdio.h"
 
+typedef hashmap renderable;
+
 typedef struct
 {
-  void** args;
-  void (**rendering_funcs)(void*);
-  unsigned int _capacity;
-  unsigned int _size;
-  unsigned int* _emptyelements_indexes;
-  unsigned int _emptyelements_capacity;
-  unsigned int _emptyelements_size;
-
-} renderable;
+  void (*rendering_funcs)(void*);
+  void* args;
+} render_element;
 
 // Render all renderable functions
 void render(renderable* renderable);
 // Init renderable
 renderable* initRenderable(void);
-void updateArgument(renderable* renderable, unsigned int UUID, void* newarg);
+void updateArgument(renderable* renderable, int UUID, void* newarg);
 void freeRenderable(renderable* renderable);
 // Add a renderable function to the renderable, return an UUID for said function
 // in the renderable
 int renderableAdd(renderable* renderable, void (*rendering_func)(void*),
                   void* args);
 
-void renderableRemove(renderable* renderable, unsigned int UUID);
+void renderableRemove(renderable* renderable, int UUID);
 #endif

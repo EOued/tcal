@@ -75,5 +75,6 @@ hashmap* hashmapInit(void);
 void hashmapFree(hashmap* map, void (*freeFunc)(void*));
 void hashmapInsert(hashmap* map, int key, void* element);
 void* hashmapFind(hashmap* map, int key);
+void hashmapDelete(hashmap* map, int key, void (*freeFunc)(void*));
 
 #endif

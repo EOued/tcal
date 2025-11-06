@@ -47,9 +47,9 @@
 #define RENDER(renderable)                                                     \
   do                                                                           \
   {                                                                            \
-    erase();                                                                   \
+    /*    erase();							*/                                                    \
     render(renderable);                                                        \
-    refresh();                                                                 \
+    /*refresh();*/                                                             \
   } while (0)
 
 #define MIN(a, b) (a < b ? a : b)

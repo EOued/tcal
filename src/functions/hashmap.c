@@ -82,6 +82,7 @@ void hashmapInsert(hashmap* map, int key, void* element)
   map->start    = node;
   return;
 }
+
 void* hashmapFind(hashmap* map, int key)
 {
   if (!map) return NULL;
@@ -92,4 +93,27 @@ void* hashmapFind(hashmap* map, int key)
     node = node->next;
   }
   return NULL;
+}
+
+void hashmapDelete(hashmap* map, int key, void (*freeFunc)(void*))
+{
+
+  if (!map) return;
+  struct HASH_NODE* node = map->start;
+  // Case deleting first element
+  if (node->key == key)
+  {
+    map->start = node->next;
+    freeFunc(node->element);
+    FREE(node);
+    return;
+  }
+  while (node->next && node->next->key != key) node = node->next;
+  // Reached end, nothing to delete
+  if (!node->next) return;
+  struct HASH_NODE* tf = node->next;
+  node->next           = node->next->next;
+  freeFunc(tf->element);
+  FREE(node);
+  return;
 }
