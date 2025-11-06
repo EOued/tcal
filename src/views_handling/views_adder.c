@@ -32,9 +32,9 @@ void addActionsFromList(elist* elist)
 void freeActionList(elist* elist)
 {
   for (unsigned int i = 0; i < elist->size; i++)
-    free(elist->elements[i].description);
-  free(elist->elements);
-  free(elist);
+    FREE(elist->elements[i].description);
+  FREE(elist->elements);
+  FREE(elist);
 }
 
 elist* presetActionList(views* v, ARGS** dateActionArg, ARGS** helpActionArg)

@@ -130,11 +130,12 @@ leave:
   viewsFree(v);
   freeActionList(elist);
   freeList(views_stack, void_free);
-  free(box_args);
   freeEventList(view_args->e_list);
-  free(view_args);
-  free(help_args);
-  free(helpActionArg);
-  free(dateActionArg);
+
+  FREE(box_args);
+  FREE(view_args);
+  FREE(help_args);
+  FREE(helpActionArg);
+  FREE(dateActionArg);
   return EXIT_SUCCESS;
 }

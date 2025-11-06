@@ -18,10 +18,10 @@ void fhashmapFree(fhashmap* map)
   while (node)
   {
     temp = node->next;
-    free(node);
+    FREE(node);
     node = temp;
   }
-  free(map);
+  FREE(map);
   return;
 }
 
@@ -65,10 +65,10 @@ void hashmapFree(hashmap* map, void (*freeFunc)(void*))
   {
     temp = node->next;
     freeFunc(node->element);
-    free(node);
+    FREE(node);
     node = temp;
   }
-  free(map);
+  FREE(map);
   return;
 }
 

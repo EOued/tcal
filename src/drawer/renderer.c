@@ -51,10 +51,10 @@ int emptyElementsPop(renderable* renderable)
 void freeRenderable(renderable* renderable)
 {
   if (!renderable) return;
-  free(renderable->args);
-  free(renderable->rendering_funcs);
-  free(renderable->_emptyelements_indexes);
-  free(renderable);
+  FREE(renderable->args);
+  FREE(renderable->rendering_funcs);
+  FREE(renderable->_emptyelements_indexes);
+  FREE(renderable);
   return;
 }
 

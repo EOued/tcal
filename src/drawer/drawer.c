@@ -13,7 +13,7 @@ void draw_event(void* varg)
   char** text = calloc(1, sizeof(char*));
   int page    = draw_page(COLS / 3, LINES / 3, 2 * COLS / 3, LINES / 3 + 3, "",
                           text, 1, 0);
-  free(text);
+  FREE(text);
   (void)page;
 }
 
@@ -53,8 +53,8 @@ void _help_box(void* args)
   // Displayed page is not entered argument: most likely an overflow, we set
   // back the page to the latest (provided by draw_page)
   if (page != -1 && page != *ptrpages) *ptrpages = page;
-  for (int i = 0; i < size; i++) free(str[i]);
-  free(str);
+  for (int i = 0; i < size; i++) FREE(str[i]);
+  FREE(str);
 }
 
 void draw_box(uint x1, uint y1, uint x2, uint y2)

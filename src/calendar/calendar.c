@@ -6,8 +6,8 @@
 void freeEventList(event_list* l)
 {
   for (uint i = 0; i < l->size; i++) freeCalendar(l->e[i]);
-  free(l->e);
-  free(l);
+  FREE(l->e);
+  FREE(l);
   return;
 }
 
@@ -66,8 +66,8 @@ int is_same_day(time_t t1, time_t t2)
 
 void freeCalendar(event c)
 {
-  free(c.summary);
-  free(c.description);
-  free(c.location);
+  FREE(c.summary);
+  FREE(c.description);
+  FREE(c.location);
   return;
 }

@@ -134,7 +134,7 @@ void week_grid(void* varg)
     mvprintw(3, (COLS / 10) + start - strlen(days[k]) / 2, "%s, %s %d",
              month_display[dm[1]], days[k], dm[0]);
     attroff(COLOR_PAIR(2));
-    free(dm);
+    FREE(dm);
   }
 }
 
@@ -180,7 +180,7 @@ void month_grid(void* varg)
                    (strlen(days[k]) + 2 + ndgit(k + k2 * 5)) / 2,
                "%s, %d", days[k], dm[0]);
       attroff(COLOR_PAIR(2));
-      free(dm);
+      FREE(dm);
     }
   }
 }

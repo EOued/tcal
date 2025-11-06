@@ -53,7 +53,7 @@ void* popPos(list* l, unsigned int pos)
   memcpy(temp, RZBL_L_ELEM(l, pos), l->esize);
   memcpy(RZBL_L_ELEM(l, pos), RZBL_L_ELEM(l, l->size - 1), l->esize);
   memcpy(RZBL_L_ELEM(l, l->size - 1), temp, l->esize);
-  free(temp);
+  FREE(temp);
   return pop(l);
 }
 

@@ -20,7 +20,7 @@ void viewFree(view* v)
 {
   fhashmapFree(v->actionsMap);
   hashmapFree(v->args, _null);
-  free(v);
+  FREE(v);
   return;
 }
 
@@ -59,7 +59,7 @@ void viewsFree(views* v)
 {
   if (!v) return;
   hashmapFree(v->views, _viewFree);
-  free(v);
+  FREE(v);
   return;
 }
 
