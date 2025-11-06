@@ -52,12 +52,10 @@ elist* presetActionList(views* v, ARGS** dateActionArg, ARGS** helpActionArg)
             "Set date to current date");
   addAction(el, v, -1, 'q', quit, NULL, "Quit");
 
-  addAction(el, v, help, 'q', helpViewQuit, helpActionArg, QUIT_MENU_DESC);
-  addAction(el, v, help, '?', helpViewQuit, helpActionArg, QUIT_MENU_DESC);
-  addAction(el, v, help, 'p', helpViewPreviousAction, helpActionArg,
-            "Next page");
-  addAction(el, v, help, 'n', helpViewNextAction, helpActionArg,
-            "Previous page");
+  addAction(el, v, help, 'q', helpViewQuit, helpActionArg, "");
+  addAction(el, v, help, '?', helpViewQuit, helpActionArg, "");
+  addAction(el, v, help, 'p', helpViewPreviousAction, helpActionArg, "");
+  addAction(el, v, help, 'n', helpViewNextAction, helpActionArg, "");
 
   addAction(el, v, event_view, 'e', drawEventsQuit, dateActionArg,
             QUIT_MENU_DESC);

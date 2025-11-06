@@ -18,12 +18,12 @@
 
 enum views
 {
-  none,
-  help,
-  day,
-  week,
-  month,
-  event_view
+  none       = 0,
+  help       = 1,
+  day        = 2,
+  week       = 3,
+  month      = 4,
+  event_view = 5
 };
 
 typedef struct

@@ -25,15 +25,15 @@ char** extract_strings(const elist* elist, int* size, int valid_view)
   (void)valid_view;
   int n, index;
   for (uint i = 0; i < elist->size; i++)
-    if (elist->elements[i].view == valid_view)
+    if (elist->elements[i].view == -1 || elist->elements[i].view == valid_view)
     {
       index = i - (elist->size - *size);
-      n     = strlen(elist->elements[index].description);
+      n     = strlen(elist->elements[i].description);
       MEMCHK(strings[index] = calloc(n + 4, 1));
-      strings[index][0] = elist->elements[index].character;
+      strings[index][0] = elist->elements[i].character;
       strings[index][1] = ':';
       strings[index][2] = ' ';
-      strncpy(strings[index] + 3, elist->elements[index].description, n);
+      strncpy(strings[index] + 3, elist->elements[i].description, n);
     }
     else
       (*size)--;

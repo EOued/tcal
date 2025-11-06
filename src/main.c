@@ -133,7 +133,8 @@ leave:
   free(box_args);
   freeEventList(view_args->e_list);
   free(view_args);
-  free(help_args) free(helpActionArg);
+  free(help_args);
+  free(helpActionArg);
   free(dateActionArg);
   return EXIT_SUCCESS;
 }
